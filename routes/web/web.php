@@ -10,6 +10,7 @@ use App\Models\StoreOwner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 Route::get('/_t', function () {
     // Response is an array of updates.
@@ -28,13 +29,21 @@ Route::get('/_t', function () {
 
     dd($updates);
 })->name('test');
+Route::get('/boo', function () {
+
+    $response = Telegram::bot('mybot')->getMe();
+    return $response;
+});
 Route::post('/telegram/webhook', function (Request $request) {
     $update = $request->all();
 
     if (isset($update['message'])) {
         $chatId = $update['message']['chat']['id'];
         $text = $update['message']['text'] ?? null;
-
+        Http::post("https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendMessage", [
+            'chat_id' => $chatId,
+            'text' => "Welcome to Wasly Verification Bot! Use /register to get started.",
+        ]);
         if ($text === '/start') {
             // Send a welcome message
             Http::post("https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendMessage", [
@@ -63,8 +72,8 @@ Route::post('/telegram/webhook', function (Request $request) {
 
             // Check models for the phone number
             $user = Customer::where('phone_number', $phoneNumber)->first() ??
-                    Delivery::where('phone_number', $phoneNumber)->first() ??
-                    StoreOwner::where('phone_number', $phoneNumber)->first();
+                Delivery::where('phone_number', $phoneNumber)->first() ??
+                StoreOwner::where('phone_number', $phoneNumber)->first();
 
             if ($user) {
                 // Update chat_id for the user
