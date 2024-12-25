@@ -11,7 +11,7 @@ use App\Http\Requests\Api\ApiRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
 
-class CustomerUpdateRequest extends ApiRequest
+class DeliveryUpdateRequest extends ApiRequest
 {
     public function rules()
     {

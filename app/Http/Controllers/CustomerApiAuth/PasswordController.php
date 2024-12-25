@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\CustomerApiAuth;
 
 use App\Constants\Constants;
 use App\Http\Controllers\Controller;
