@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Services\Telegram;
-
+Route::get('/test',function(){
+    return 'hello';
+});
 Route::prefix('/customer')->name('customer.')->group(function () {
     // Routes for customers
     // Route::middleware(['auth:sanctum', 'abilities:'.Constants::customer_guard])->get('/test', function (Request $request) {
