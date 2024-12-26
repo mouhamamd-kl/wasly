@@ -11,23 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/_t', function () {
-    // Response is an array of updates.
-    $updates = \NotificationChannels\Telegram\TelegramUpdates::create()
-        // (Optional). Get's the latest update. NOTE: All previous updates will be forgotten using this method.
-        ->latest()
 
-        // (Optional). Limit to 2 updates (By default, updates starting with the earliest unconfirmed update are returned).
-        ->limit(2)
-
-        // (Optional). Add more params to the request.
-        ->options([
-            'timeout' => 0,
-        ])
-        ->get();
-
-    dd($updates);
-})->name('test');
 Route::post('/telegram/webhook', function (Request $request) {
     $update = $request->all();
 
@@ -93,7 +77,7 @@ Route::get('/', function () {
 });
 
 Route::prefix('admin')->name('admin.')->middleware(AdminMiddleWare::class)->group(function () {
-    Route::get('/', BackHomeController::class)->name('index');
+    // Route::get('/', BackHomeController::class)->name('index');
     Route::withoutMiddleware(AdminMiddleWare::class)->group(function () {
         require __DIR__ . '/adminAuth.php';
     });
