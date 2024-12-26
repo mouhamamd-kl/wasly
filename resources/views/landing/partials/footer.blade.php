@@ -1,5 +1,5 @@
 <!-- Footer-Section start -->
-<footer class="white_text" data-aos="fade-in" data-aos-duration="1500">
+<footer class="white_text" data-aos="fade-in" data-aos-duration="1500" id="Contact">
     <div class="footer_overlay"> <img src="{{ asset('assets-front') }}/images/overlay-bg1.svg" alt="img"> </div>
     <div class="container">
         <div class="row">
@@ -58,7 +58,8 @@
         <div class="container">
             <div class="ft_inner d-flex justify-content-center">
                 <div class="copy_text">
-                    <p>© Copyrights 2023. All rights reserved.</p>
+                    <p>© Copyrights 2024. All rights reserved .</p>
+                    <p>Designed By mouhammad kl</p>
                 </div>
             </div>
         </div>

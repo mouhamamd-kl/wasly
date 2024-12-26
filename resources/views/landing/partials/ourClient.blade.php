@@ -1,4 +1,4 @@
-<section class="row_am our_client">
+{{-- <section class="row_am our_client">
     <div class="container">
         <div class="section_title">
             <h2>
@@ -50,4 +50,4 @@
             </li>
         </ul>
     </div>
-</section>
+</section> --}}

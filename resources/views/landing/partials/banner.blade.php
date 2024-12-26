@@ -19,17 +19,16 @@
                 <div class="banner_text">
                     <!-- typed text -->
                     <div class="type-wrap">
-                        <!-- add static words/sentences here (i.e. text that you don't want to be removed)-->
-                        <span id="typed" style="white-space:pre;" class="typed">
-                        </span>
+                        <!-- Highlight core functionality dynamically -->
+                        <span id="typed" style="white-space:pre;" class="typed"></span>
                     </div>
                     <!-- h1 -->
-                    <h1>Lead generation <span>mobile
-                            app landing page</span></h1>
+                    <h1>Your Ultimate <span>Shopping Delivery Solution</span></h1>
                     <!-- p -->
                     <p>
-                        Lorem Ipsum is simply dummy text of the printing
-                        indus orem Ipsum has been the industrys.
+                        Wasly bridges the gap between customers and stores, making it easy to order and receive your
+                        essentials. Fast, reliable, and at your fingertips — enjoy seamless shopping from the comfort of
+                        your home.
                     </p>
                 </div>
 
@@ -39,6 +38,8 @@
                         <li><img src="{{ asset('assets-front') }}/images/banavt1.png" alt="image"></li>
                         <li><img src="{{ asset('assets-front') }}/images/banavt2.png" alt="image"></li>
                         <li><img src="{{ asset('assets-front') }}/images/banavt3.png" alt="image"></li>
+                        <li><img src="{{ asset('assets-front') }}/images/banavt4.png" alt="image"></li>
+                        
                         <li>
                             <a href="#" class="popup-youtube play-button"
                                 data-url="https://www.youtube.com/embed/tgbNymZ7vqY?autoplay=1&mute=1"
@@ -47,7 +48,8 @@
                         </li>
                     </ul>
                     <h3>12M + Active users</h3>
-                    <p>The best application to manage your <br> customer worldwide</p>
+                    <p> Discover why Wasly is the ultimate app for connecting stores and customers. <br>
+                        Join millions worldwide for a smarter, faster shopping experience</p>
                 </div>
 
                 <!-- app buttons -->

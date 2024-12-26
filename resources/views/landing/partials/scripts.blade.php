@@ -13,7 +13,7 @@
 
 <script>
     $("#typed").typed({
-     strings: ["Type Writing Text", "Auto Type Text", "Add any text you like here."],
+     strings: ["Connect with stores effortlessly"],
      typeSpeed: 100,
      startDelay: 0,
      backSpeed: 60,

@@ -484,7 +484,7 @@ header.fixed .navbar {
 }
 
 .navbar-brand img {
-    width: 130px;
+    width: 250px;
 }
 
 .navbar-brand h3 {
@@ -729,7 +729,7 @@ header.fixed .navbar {
     margin-left: -20px;
 }
 
-.banner_section .used_app ul li:not(:first-child) img {
+.banner_section .used_app ul li img {
     border: 3px solid var(--bg-white);
     border-radius: 100px;
 }

@@ -2,7 +2,7 @@
     <div class="container">
         <div class="center_screen">
             <div class="img">
-                <img src="{{ asset('assets-front') }}/images/downloadScreen.png" alt="image">
+                <img src="{{ asset('assets-front') }}/images/downloadScreen.svg" alt="image">
             </div>
             <!-- app buttons -->
             <ul class="app_btn">
