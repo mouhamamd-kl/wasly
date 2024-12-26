@@ -74,7 +74,7 @@ Route::post('/telegram/webhook', function (Request $request) {
 });
 Route::get('/', function () {
     return view('landing.index');
-});
+})->name('home.landing');
 
 Route::prefix('admin')->name('admin.')->middleware(AdminMiddleWare::class)->group(function () {
     // Route::get('/', BackHomeController::class)->name('index');
