@@ -1,5 +1,5 @@
 <!-- Pricing-Section -->
-<section class="row_am pricing_section white_text" data-aos="fade-in" data-aos-duration="1500">
+<section id="Pricing" class="row_am pricing_section white_text" data-aos="fade-in" data-aos-duration="1500">
     <div class="pricing_inner">
         <!-- container start -->
         <div class="container">

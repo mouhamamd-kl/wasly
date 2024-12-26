@@ -37,7 +37,7 @@
                 </div>
                 <div class="item">
                     <div class="screen_frame_img">
-                        <img src="{{ asset('assets-front') }}/images/intrscrn2.png" alt="image">
+                        <img src="{{ asset('assets-front') }}/images/intrscrn6.png" alt="image">
                     </div>
                 </div>
             </div>

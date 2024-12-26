@@ -4,8 +4,8 @@
     <div class="container">
         <!-- navigation bar -->
         <nav class="navbar navbar-expand-lg">
-            <a class="navbar-brand" href="index.html">
-                <img src="{{ asset('assets-front') }}/images/log.png" alt="Logo">
+            <a class="navbar-brand" href="{{ route('home.landing') }}">
+                <img src="{{ asset('assets-front') }}/images/logo.svg" alt="Logo">
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,13 +20,13 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="index.html">Home</a>
+                        <a class="nav-link" href="{{ route('home.landing') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="about.html">About us</a>
+                        <a class="nav-link" href="#AboutUs">About us</a>
                     </li>
                     <!-- secondery menu start -->
-                    <li class="nav-item has_dropdown">
+                    {{-- <li class="nav-item has_dropdown">
                         <a class="nav-link" href="#">Pages</a>
                         <span class="drp_btn"><i class="icofont-rounded-down"></i></span>
                         <div class="sub_menu">
@@ -37,20 +37,20 @@
                                 <li><a href="sign-up.html">Sign Up</a></li>
                             </ul>
                         </div>
-                    </li>
+                    </li> --}}
                     <!-- secondery menu end -->
 
                     <li class="nav-item">
-                        <a class="nav-link" href="pricing.html">Pricing</a>
+                        <a class="nav-link" href="#Pricing">Pricing</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="reviews.html">Reviews</a>
+                        <a class="nav-link" href="#Reviews">Reviews</a>
                     </li>
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                         <a class="nav-link" href="blog-list.html">Blog</a>
-                    </li>
+                    </li> --}}
                     <li class="nav-item">
-                        <a class="nav-link" href="contact.html">Contact</a>
+                        <a class="nav-link" href="#Contact">Contact</a>
                     </li>
                     <li class="nav-item">
                         <div class="btn_block">

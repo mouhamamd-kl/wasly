@@ -61,7 +61,7 @@
     @include('landing.partials.download_1')
 
     <!-- Blog Section  -->
-    @include('landing.partials.blogSection')
+    {{-- @include('landing.partials.blogSection') --}}
 
     <!-- Footer-Section -->
     @include('landing.partials.footer')
