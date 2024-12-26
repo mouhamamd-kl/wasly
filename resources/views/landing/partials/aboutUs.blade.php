@@ -37,7 +37,7 @@
             </div>
             <div class="col-lg-4 col-md-6">
                 <div class="abtImg text-center" data-aos="fade-up" data-aos-duration="1500">
-                    <img src="{{ asset('assets-front') }}/images/appscreen.svg" alt="image">
+                    <img src="{{ asset('assets-front') }}/images/appscreen.png" alt="image">
                 </div>
             </div>
             <div class="col-lg-4">
