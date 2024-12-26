@@ -22,5 +22,3 @@ yarn-error.log
 /.vscode
 /.zed
 /node_modules
-package-lock.json
-package.json
