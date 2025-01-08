@@ -31,6 +31,10 @@ class Delivery extends Authenticatable implements MustVerifyEmail
     protected $guarded = [
         'id',                // Primary Key
     ];
+    public function deliveryStatus()
+    {
+        return $this->belongsTo(DeliveryStatus::class);
+    }
     public function sendEmailVerificationNotification()
     {
         // return ApiResponse::sendResponse(code:200,msg:'are you here',data:[]);
@@ -86,5 +90,15 @@ class Delivery extends Authenticatable implements MustVerifyEmail
     public function hasVerifiedEmail()
     {
         return $this->email_verified_at !== null;
+    }
+    public static function findOrFailWithResponse(int $id)
+    {
+        $delivery = self::find($id);
+
+        if (!$delivery) {
+            // Return the custom API response
+            ApiResponse::sendResponse(404, 'Delivery Not Found')->throwResponse();
+        }
+        return $delivery;
     }
 }

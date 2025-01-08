@@ -54,7 +54,7 @@
             <img src="{{ asset('assets-front') }}/images/bigstar.png" alt="image" />
         </div>
         <div class="scrren">
-            <img src="{{ asset('assets-front') }}/images/sign_in_screen.png" alt="image" />
+            <img src="{{ asset('assets-front') }}/images/sign_in_screen2.png" alt="image" />
         </div>
     </div>
 </div>

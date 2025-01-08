@@ -2,26 +2,19 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
-use Illuminate\Support\Str;
 use App\Helpers\ApiResponse;
-use App\Helpers\verificationSwitcher;
-use App\Notifications\CustomerPasswordNotification;
-use App\Notifications\EmailVerification;
-use App\Notifications\OTPEmailVerification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\URL;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use App\Notifications\CustomPasswordNotification;
+use App\Notifications\EmailVerification;
 
 class Customer extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
 
     /**
@@ -30,40 +23,9 @@ class Customer extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $guarded = [
-        'id',                // Primary Key
+        'id',
     ];
-    public function sendPasswordResetNotification($token)
-    {
-        $this->notify(new CustomerPasswordNotification(token: $token, route: 'customer', email: $this->email));
-    }
-    public function sendEmailVerificationNotification()
-    {
-        // return ApiResponse::sendResponse(code:200,msg:'are you here',data:[]);
-        $this->generateVerificationToken();
-        $url = route('customer.verification.verify', [
-            'id' => $this->getKey(),
-            'token' => $this->verification_token,
-            // 'hash' => sha1($this->getEmailForVerification())
-        ]);
-        $this->notify(new EmailVerification($url, $this->name));
-    }
-    //==============================================================CUSTOM VERIFICATION TOKENS
-    public function generateVerificationToken()
-    {
 
-        $this->verification_token = Str::random(40);
-        $this->verification_token_till = now()->addMinutes(60);
-        $this->save();
-    }
-    public function verifyUsingVerificationToken()
-    {
-
-        $this->email_verified_at = now();
-        $this->verification_token = null;
-        $this->verification_token_till = null;
-        $this->save();
-    }
-    //==============================================================CUSTOM VERIFICATION TOKENS
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -72,6 +34,7 @@ class Customer extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+        'pivot'
     ];
 
     /**
@@ -86,10 +49,122 @@ class Customer extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
-    // In app/Models/User.php
 
+    /**
+     * Get the customer's addresses.
+     */
+    public function addresses()
+    {
+        return $this->hasMany(CustomerAddress::class);
+    }
+    // Define the relationship with products through the cart pivot table
+    public function cartProducts()
+    {
+        return $this->belongsToMany(Product::class, 'carts')
+            ->withPivot('count')
+            ->withTimestamps();
+    }
+    public function favouriteProducts()
+    {
+        return $this->belongsToMany(Product::class, 'favourite_products')
+            ->withTimestamps();
+    }
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+    // Relationships
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+    /**
+     * Get nearby stores based on the customer's default address.
+     *
+     * @param int $radius The radius to search within (in kilometers)
+     * @param int $limit The maximum number of stores to return
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getNearbyStores($radius = 10, $limit = 10)
+    {
+        $defaultAddress = $this->addresses()->where('is_default', true)->first();
+
+        if (!$defaultAddress) {
+            return collect();
+        }
+
+        return Store::getNearby($defaultAddress->latitude, $defaultAddress->longitude, $radius, $limit);
+    }
+
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param string $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomPasswordNotification(token: $token, route: 'customer', email: $this->email));
+    }
+
+    /**
+     * Send the email verification notification.
+     *
+     * @return void
+     */
+    public function sendEmailVerificationNotification()
+    {
+        $this->generateVerificationToken();
+        $url = route('customer.verification.verify', [
+            'id' => $this->getKey(),
+            'token' => $this->verification_token,
+        ]);
+        $this->notify(new EmailVerification($url, $this->name));
+    }
+
+    /**
+     * Generate a new email verification token.
+     *
+     * @return void
+     */
+    public function generateVerificationToken()
+    {
+        $this->verification_token = Str::random(40);
+        $this->verification_token_till = now()->addMinutes(60);
+        $this->save();
+    }
+
+    /**
+     * Verify the customer's email using the verification token.
+     *
+     * @return void
+     */
+    public function verifyUsingVerificationToken()
+    {
+        $this->email_verified_at = now();
+        $this->verification_token = null;
+        $this->verification_token_till = null;
+        $this->save();
+    }
+
+    /**
+     * Determine if the customer has verified their email address.
+     *
+     * @return bool
+     */
     public function hasVerifiedEmail()
     {
         return $this->email_verified_at !== null;
+    }
+    public static function findOrFailWithResponse(int $id)
+    {
+        $customer = self::find($id);
+
+        if (!$customer) {
+            // Return the custom API response
+            ApiResponse::sendResponse(404, 'Customer Not Found')->throwResponse();
+        }
+        return $customer;
     }
 }

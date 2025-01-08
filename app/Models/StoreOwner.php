@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Support\Str;
 use App\Helpers\ApiResponse;
 use App\Helpers\verificationSwitcher;
+use App\Notifications\CustomPasswordNotification;
 use App\Notifications\EmailVerification;
 use App\Notifications\OTPEmailVerification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -31,7 +32,31 @@ class StoreOwner extends Authenticatable implements MustVerifyEmail
     protected $guarded = [
         'id',                // Primary Key
     ];  
-    
+    public function store()
+    {
+         return $this->hasOne(Store::class);
+    }
+    public static function findOrFailWithResponse(int $id)
+    {
+         $storeOwner = self::find($id);
+
+         if (!$storeOwner) {
+              // Return the custom API response
+              ApiResponse::sendResponse(404, 'Store Owner Not Found')->throwResponse();
+         }
+
+         return $storeOwner;
+    }
+        /**
+     * Send the password reset notification.
+     *
+     * @param string $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomPasswordNotification(token: $token, route: 'store-owner', email: $this->email));
+    }
     public function sendEmailVerificationNotification()
     {
         // return ApiResponse::sendResponse(code:200,msg:'are you here',data:[]);
