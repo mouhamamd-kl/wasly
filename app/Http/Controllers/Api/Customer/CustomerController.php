@@ -55,7 +55,7 @@ class CustomerController extends Controller
             $q->where('title', 'like', '%' . $word . '%');
         })->latest()->paginate(1);
         if ($request->is('api/*')) {
-            return  PaginationHelper::paginateResponse($ads, AdResource::class, Customer::class);
+            return  PaginationHelper::paginateResponse($ads, CustomerResource::class, Customer::class);
         }
         return view('admin.auth.master', get_defined_vars());
     }
@@ -71,7 +71,7 @@ class CustomerController extends Controller
     {
         $customer = Customer::find($id);
         if ($id) {
-            return ApiResponse::sendResponse(code: 404, msg: 'customer retrived Successfully', data: new AdResource($customer));
+            return ApiResponse::sendResponse(code: 404, msg: 'customer retrived Successfully', data: new CustomerResource($customer));
         }
         return ApiResponse::sendResponse(code: 404, msg: 'customer Not Found', data: []);
     }

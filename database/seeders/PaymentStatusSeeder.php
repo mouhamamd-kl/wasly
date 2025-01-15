@@ -17,10 +17,7 @@ class PaymentStatusSeeder extends Seeder
          $statuses = [
             'Pending',
             'Completed',
-            'Failed',
-            'Refunded',
             'Cancelled',
-            'Processing',
         ];
 
         // Create each payment status in the database

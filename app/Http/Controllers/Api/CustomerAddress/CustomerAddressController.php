@@ -16,6 +16,21 @@ class CustomerAddressController extends Controller
 {
     use AuthorizesRequests;
 
+    public function getUserAdresses(Request $request)
+    {
+        // Retrieve the authenticated customer
+        $customer = $request->user();
+
+        // Query to get the cart products with their related models
+        $adressQuery = $customer->addresses();
+
+        // Get all cart products (not paginated)
+        $cartProducts = $adressQuery->get();
+
+
+        // Return the cart products and total
+        return ApiResponse::sendResponse(code: 200, msg: "sucesss", data: CustomerAddressResource::collection($cartProducts));
+    }
     /**
      * Display the specified resource.
      *
@@ -79,7 +94,6 @@ class CustomerAddressController extends Controller
         $this->authorize('create', CustomerAddress::class);  // This ensures that the 'create' policy is applied to the Product model
         // Process and validate the request
         $validatedData = $this->processValidatedData($request);
-        $validatedData['photo'] = ImagePath(request: $request, ImageReplacePath: 'public\defaults\images\defaultProductImage.png');
         // Create a new product with the validated data
         $product = CustomerAddress::create($validatedData);
         // Return a success response with the newly created product

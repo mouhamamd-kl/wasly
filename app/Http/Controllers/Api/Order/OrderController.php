@@ -15,6 +15,7 @@ use App\Http\Requests\Api\Product\ProductUpdateRequest;
 use App\Http\Resources\AdResource;
 use App\Http\Resources\CartProductResource;
 use App\Http\Resources\CustomerResource;
+use App\Http\Resources\OrderItemResource;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\StoreResource;
 use App\Models\Ad;
@@ -121,7 +122,14 @@ class OrderController extends Controller
 
         return ApiResponse::sendResponse(200, 'Payment initiated', $payment);
     }
-
+    public function getUserItemOrders(Request $request)
+    {
+        $customer = $request->user();
+        $orderItems = OrderItem::whereHas('order', function ($query) use ($customer) {
+            $query->where('customer_id', $customer->id);
+        })->get();
+        return ApiResponse::sendResponse(200, 'success', OrderItemResource::collection($orderItems));
+    }
     public function updateOrderItemStatus(Request $request, $orderItemId)
     {
         $orderItem = OrderItem::findOrFail($orderItemId);

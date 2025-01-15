@@ -64,11 +64,10 @@ class FavouriteController extends Controller
 
         // Retrieve the customer's favorite products query
         $favouriteProductsQuery = $this->getUserFavouriteProducts($request);
-        $paginate = getPaginate($request);
         // Paginate the query results
-        $favouriteProducts = $favouriteProductsQuery->paginate($paginate); // Adjust the per-page limit as needed
+        $favouriteProducts = $favouriteProductsQuery->get(); // Adjust the per-page limit as needed
         // Return the favorite products using the ApiResponse helper
-        return PaginationHelper::paginateResponse($favouriteProducts,ProductResource::class,Product::class);
+        return ApiResponse::sendResponse(200, 'sucess', ProductResource::collection($favouriteProducts));
     }
 
 

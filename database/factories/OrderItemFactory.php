@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Order;
+use App\Models\OrderStatus;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,11 +19,21 @@ class OrderItemFactory extends Factory
      */
     public function definition(): array
     {
+        // Get a random product or create a new one
+        $product = Product::inRandomOrder()->first() ?? Product::factory()->create();
+
+        // Generate a random quantity
+        $quantity = $this->faker->numberBetween(1, 5);
+
+        // Calculate price based on product price
+        $price = $quantity * $product->price;
+
         return [
-            'order_id' => Order::inRandomOrder()->value('id') ?? Order::factory(), // Random order
-            'product_id' => Product::inRandomOrder()->value('id') ?? Product::factory(), // Random product
-            'quantity' => $this->faker->numberBetween(1, 5), // Random quantity between 1 and 5
-            'price' => $this->faker->randomFloat(2, 10, 1000), // Random price between 10 and 1000
+            'order_id' => Order::inRandomOrder()->value('id') ?? Order::factory()->create()->id,
+            'product_id' => $product->id, // Use the ID of the product
+            'quantity' => $quantity,
+            'order_status_id' => OrderStatus::inRandomOrder()->value('id') ?? OrderStatus::factory()->create()->id,
+            'price' => $price,
         ];
     }
 }

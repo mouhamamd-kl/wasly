@@ -25,9 +25,8 @@ class PaginationHelper
         // $resourceCollection = $resourceClass::collection($originData); // Create resource collection
 
         if (count($originData) > 0) {
-            if ($originData instanceof \Illuminate\Pagination\LengthAwarePaginator && $originData->total() > $originData->perPage()) {
                 $data = [
-                    'records' => $resourceCollection::collection($originData),
+                    'items' => $resourceCollection::collection($originData),
                     'paginartion links' => [
                         'current page' => $originData->currentPage(),
                         'per page' => $originData->perPage(),
@@ -35,14 +34,35 @@ class PaginationHelper
                         'links' => [
                             'first' => $originData->url(1),
                             'last' => $originData->url($originData->lastPage()),
+                            'previous' => $originData->previousPageUrl(), // Previous page link
+                            'next' => $originData->nextPageUrl(), // Next page link
                         ]
                     ]
-                ];
-            } else {
-                $data = $resourceCollection::collection($originData);
+                ];           
+                return ApiResponse::sendResponse(code: 200, msg: 'Ads retrived successsfully Found', data: $data);
             }
-            return ApiResponse::sendResponse(code: 200, msg: 'Ads retrived successsfully Found', data: $data);
-        }
+
+            // if ($originData instanceof \Illuminate\Pagination\LengthAwarePaginator && $originData->total() > $originData->perPage()) {
+            //     $data = [
+            //         'items' => $resourceCollection::collection($originData),
+            //         'paginartion links' => [
+            //             'current page' => $originData->currentPage(),
+            //             'per page' => $originData->perPage(),
+            //             'total' => $originData->total(),
+            //             'links' => [
+            //                 'first' => $originData->url(1),
+            //                 'last' => $originData->url($originData->lastPage()),
+            //                 'previous' => $originData->previousPageUrl(), // Previous page link
+            //                 'next' => $originData->nextPageUrl(), // Next page link
+            //             ]
+            //         ]
+            //     ];
+            // } 
+            // else {
+            //     $data = $resourceCollection::collection($originData);
+            // }
+            // return ApiResponse::sendResponse(code: 200, msg: 'Ads retrived successsfully Found', data: $data);
+        
         return ApiResponse::sendResponse(code: 200, msg: "$name Not Found", data: []);
     }
 }

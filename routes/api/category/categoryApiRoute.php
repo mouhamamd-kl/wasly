@@ -1,6 +1,7 @@
 <?php
 
 use App\Helpers\ApiResponse;
+use App\Http\Controllers\Api\Category\CategoryController;
 use App\Http\Controllers\Api\Product\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -12,3 +13,4 @@ Route::get('/', function () {
     return ('hello from the Product');
 });
 Route::get('/{categoryId}/products', [ProductController::class, 'getCategoryProductsApi'])->name('products.paginated');
+Route::get('/', [CategoryController::class, 'indexApi']);

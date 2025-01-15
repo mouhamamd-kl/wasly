@@ -17,7 +17,6 @@ return new class extends Migration
 
             // Relationships
             $table->foreignIdFor(StoreOwner::class)->constrained('store_owners')->onDelete('cascade'); // Foreign key to store owners
-        
             // Store details
             $table->string('name'); // Store name
             $table->longText('photo')->nullable(); // Store photo

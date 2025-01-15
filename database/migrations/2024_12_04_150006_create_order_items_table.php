@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\Order;
+use App\Models\OrderStatus;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,19 +18,17 @@ return new class extends Migration
         Schema::create('order_items', function (Blueprint $table) {
             // Primary Key
             $table->id();
-        
             // Foreign Keys
             $table->foreignIdFor(Order::class)->constrained('orders')->onDelete('cascade');;
             $table->foreignIdFor(Product::class)->constrained('products')->onDelete('cascade');;
-        
+            $table->foreignIdFor(OrderStatus::class)->constrained('order_statuses')->onDelete('cascade');;
             // Item details
             $table->bigInteger('quantity');
             $table->decimal('price');
-        
+
             // Default timestamps
             $table->timestamps();
         });
-        
     }
 
     /**

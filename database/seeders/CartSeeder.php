@@ -13,6 +13,6 @@ class CartSeeder extends Seeder
      */
     public function run(): void
     {
-        Cart::factory()->count(100)->create();
+        Cart::factory()->count(20)->create();
     }
 }

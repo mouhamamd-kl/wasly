@@ -74,7 +74,7 @@ class Store extends Model
 
           if (!$store) {
                // Return the custom API response
-               ApiResponse::sendResponse(404, 'Store Not Found')->throwResponse();
+              return ApiResponse::sendResponse(404, 'Store Not Found');
           }
 
           return $store;

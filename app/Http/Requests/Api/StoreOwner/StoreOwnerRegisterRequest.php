@@ -23,7 +23,7 @@ class StoreOwnerRegisterRequest extends ApiRequest
             'phone' => 'required|string|unique:store_owners,phone|max:15',
             'email' => 'required|email|unique:store_owners,email|max:255',
             'password' => 'required|string|min:8|confirmed',  // Make sure to confirm the password
-            'photo' => 'required|file|mimes:jpg,jpeg,png,gif',  // Assuming it's a file path or URL
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png,gif',  // Assuming it's a file path or URL
         ];
     }
     /**

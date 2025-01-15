@@ -23,7 +23,7 @@ class CustomerRegisterRequest extends ApiRequest
             'phone' => 'required|string|unique:customers,phone|max:15',
             'email' => 'required|email|unique:customers,email|max:255',
             'password' => 'required|string|min:8|confirmed',  // Make sure to confirm the password
-            'photo' => 'required|file|mimes:jpg,jpeg,png,gif',  // Assuming it's a file path or URL
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png,gif',  // Assuming it's a file path or URL
         ];
     }
     /**

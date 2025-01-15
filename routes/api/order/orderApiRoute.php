@@ -18,7 +18,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         // Store owner routes
         Route::middleware('abilities:' . Constants::store_owner_guard)->group(function () {
-            Route::patch('/items/{orderItem?}/status', [OrderController::class, 'updateOrderItemStatus'])->name('items.status.update');
+            Route::post('/items/{orderItem?}/status', [OrderController::class, 'updateOrderItemStatus'])->name('items.status.update');
         });
     });
 });

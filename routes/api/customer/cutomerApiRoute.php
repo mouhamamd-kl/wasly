@@ -13,6 +13,7 @@ Route::middleware(['auth:sanctum', 'abilities:' . constants::customer_guard])->g
     Route::patch('/{id}', [CustomerController::class, 'update']);
     Route::delete('/{id}', [CustomerController::class, 'destroy']);
     Route::get('/info', [CustomerController::class, 'info']);
+    
 });
 
 require __DIR__ . '/customerApiAuth.php';

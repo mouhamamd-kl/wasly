@@ -101,43 +101,86 @@ class ReviewController extends Controller
         // Return a success response
         return ApiResponse::sendResponse(200, 'Review deleted successfully.');
     }
-    public function getProductReviews(Request $request, $productId)
+
+
+    public function getProductReviewsApi(Request $request, $productId)
     {
         // Ensure the product exists
         $product = Product::findOrFail($productId);
-        // Retrieve reviews with related models
-        $reviews = $product->reviews()
-            ->with(['rating', 'product', 'customer']);
 
-        // Return the reviews using the ReviewResource collection
-        return $reviews;
+        // Retrieve all reviews for the product with necessary relationships
+        $reviews = $product->reviews()
+            ->with(['rating', 'product', 'customer']) // Eager load relationships
+            ->get();
+
+        // Return the reviews using the ReviewResource
+        return ApiResponse::sendResponse(
+            code: 200,
+            msg: 'Product reviews retrieved successfully',
+            data: ReviewResource::collection($reviews)
+        );
     }
-    public function getProductReviewsApi(Request $request, $productId)
-    {
-        $paginate = getPaginate($request);
-        $reviews = $this->getProductReviews(request: $request, productId: $productId)->paginate($paginate);
-        return PaginationHelper::paginateResponse(originData: $reviews, resourceClass: ReviewResource::class, modelClass: Review::class);
-    }
+
     public function getStoreReviews(Request $request, $storeId)
     {
         // Ensure the store exists
         $store = Store::findOrFail($storeId);
 
-        // Retrieve reviews related to products of the store with related models
+        // Retrieve all reviews for the store's products
         $reviews = $store->products()
-            ->with('reviews.rating', 'reviews.product', 'reviews.customer') // Eager load reviews and related data
+            ->with(['reviews.rating', 'reviews.product', 'reviews.customer']) // Eager load relationships
             ->get()
-            ->pluck('reviews') // Extract reviews from products
-            ->flatten(); // Flatten the reviews collection
+            ->pluck('reviews') // Extract reviews from each product
+            ->flatten(); // Flatten the collection of reviews
 
-        // Return the reviews using a suitable resource collection
-        return $reviews;
+        // Return the reviews using the ReviewResource
+        return ApiResponse::sendResponse(
+            code: 200,
+            msg: 'Store reviews retrieved successfully',
+            data: ReviewResource::collection($reviews)
+        );
     }
-    public function getStoreReviewsApi(Request $request, $storeId)
-    {
 
-        $paginate = getPaginate($request);
-        $reviews = $this->getStoreReviews(request: $request, storeId: $storeId)->paginate($paginate);
-        return PaginationHelper::paginateResponse(originData: $reviews, resourceClass: ReviewResource::class, modelClass: Review::class);
-    }
+
+
+
+    // public function getProductReviews(Request $request, $productId)
+    // {
+    //     // Ensure the product exists
+    //     $product = Product::findOrFail($productId);
+    //     // Retrieve reviews with related models
+    //     $reviews = $product->reviews()
+    //         ->with(['rating', 'product', 'customer']);
+
+    //     // Return the reviews using the ReviewResource collection
+    //     return $reviews;
+    // }
+    // public function getProductReviewsApi(Request $request, $productId)
+    // {
+    //     $paginate = getPaginate($request);
+    //     $reviews = $this->getProductReviews(request: $request, productId: $productId)->paginate($paginate);
+    //     return PaginationHelper::paginateResponse(originData: $reviews, resourceClass: ReviewResource::class, modelClass: Review::class);
+    // }
+    // public function getStoreReviews(Request $request, $storeId)
+    // {
+    //     // Ensure the store exists
+    //     $store = Store::findOrFail($storeId);
+
+    //     // Retrieve reviews related to products of the store with related models
+    //     $reviews = $store->products()
+    //         ->with('reviews.rating', 'reviews.product', 'reviews.customer') // Eager load reviews and related data
+    //         ->get()
+    //         ->pluck('reviews') // Extract reviews from products
+    //         ->flatten(); // Flatten the reviews collection
+
+    //     // Return the reviews using a suitable resource collection
+    //     return $reviews;
+    // }
+    // public function getStoreReviewsApi(Request $request, $storeId)
+    // {
+
+    //     $paginate = getPaginate($request);
+    //     $reviews = $this->getStoreReviews(request: $request, storeId: $storeId)->paginate($paginate);
+    //     return PaginationHelper::paginateResponse(originData: $reviews, resourceClass: ReviewResource::class, modelClass: Review::class);
+    // }
 }

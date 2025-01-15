@@ -40,7 +40,26 @@ if (!function_exists('getPaginate')) {
 }
 if (!function_exists('ImagePath')) {
 
-    function ImagePath(Request $request, $ImageReplacePath, $photoKey = 'photo',)
+    // function ImagePath(Request $request, $ImageReplacePath, $photoKey = 'photo',)
+    // {
+
+    //     if (filter_var($photoKey, FILTER_VALIDATE_URL)) {
+    //         // Download the image from the URL
+    //         $tempImagePath = tempnam(sys_get_temp_dir(), 'photo_');
+    //         file_put_contents($tempImagePath, file_get_contents($photoKey));
+
+    //         // Upload the downloaded image to Imgur
+    //         $link = uploadToImgurFromPath($tempImagePath);
+
+    //         // Clean up the temporary file
+    //         unlink($tempImagePath);
+
+    //         return $link;
+    //     }
+
+    //     return uploadToImgur(request: $request, photoKey: $photoKey, defaultImagePath: $ImageReplacePath);
+    // }
+    function ImagePath(Request $request, $ImageReplacePath, $photoKey = 'photo')
     {
         if (filter_var($photoKey, FILTER_VALIDATE_URL)) {
             // Download the image from the URL
@@ -56,7 +75,7 @@ if (!function_exists('ImagePath')) {
             return $link;
         }
 
-        return uploadToImgur(request: $request, photoKey: $photoKey, defaultImagePath: $ImageReplacePath);
+        return uploadToImgur($request, $ImageReplacePath, $photoKey);
     }
 }
 if (!function_exists('uploadToImgurFromPath')) {
@@ -73,28 +92,44 @@ if (!function_exists('uploadToImgurFromPath')) {
             return $response->json()['data']['link']; // Return the image link
         }
 
-        return response()->json(['error' => 'Failed to upload image'], 400);
+        // Instead of returning a response, throw an exception
+        throw new \Exception('Failed to upload image: ' . $response->body());
     }
 }
 if (!function_exists('uploadToImgur')) {
 
+    // function uploadToImgur(Request $request, $defaultImagePath = null, $photoKey = 'photo')
+    // {
+    //     if ($request->hasFile($photoKey)) {
+    //         $file = $request->file($photoKey);
+
+    //         // Upload the file
+    //         return uploadToImgurFromPath($file->getRealPath());
+    //     }
+
+    //     if ($defaultImagePath) {
+    //         $defaultImagePath = public_path($defaultImagePath);
+
+    //         // Upload the default image
+    //         return uploadToImgurFromPath($defaultImagePath);
+    //     }
+
+    //     return response()->json(['error' => 'No image uploaded and no default image provided'], 400);
+    // }
     function uploadToImgur(Request $request, $defaultImagePath = null, $photoKey = 'photo')
     {
         if ($request->hasFile($photoKey)) {
             $file = $request->file($photoKey);
-
-            // Upload the file
             return uploadToImgurFromPath($file->getRealPath());
         }
 
         if ($defaultImagePath) {
             $defaultImagePath = public_path($defaultImagePath);
-
-            // Upload the default image
             return uploadToImgurFromPath($defaultImagePath);
         }
 
-        return response()->json(['error' => 'No image uploaded and no default image provided'], 400);
+        // Instead of returning a response, throw an exception
+        throw new \Exception('No image uploaded and no default image provided');
     }
 }
     // function ImagePath(Request $request, $photoKey = 'photo', $ImageReplacePath)

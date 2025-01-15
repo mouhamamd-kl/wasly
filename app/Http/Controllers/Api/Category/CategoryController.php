@@ -28,13 +28,13 @@ class CategoryController extends Controller
     public function indexPaginateApi(Request $request)
     {
         $paginate = getPaginate($request);
-        $products = Product::latest()->paginate($paginate);
-        return PaginationHelper::paginateResponse($products, ProductResource::class, Product::class);
+        $products = Category::latest()->paginate($paginate);
+        return PaginationHelper::paginateResponse($products, CategoryResource::class, Category::class);
     }
     public function indexApi(Request $request)
     {
-        $products = Product::latest()->get();
-        return ApiResponse::sendResponse(200, 'Products Recieved Successfully', ProductResource::collection($products));
+        $categories = Category::latest()->get();
+        return ApiResponse::sendResponse(200, 'Categories Recieved Successfully', CategoryResource::collection($categories));
     }
     public function latest(Request $request)
     {

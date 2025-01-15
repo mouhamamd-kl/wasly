@@ -16,6 +16,21 @@ class CustomerCardController extends Controller
 {
     use AuthorizesRequests;
 
+    public function getUserCards(Request $request)
+    {
+        // Retrieve the authenticated customer
+        $customer = $request->user();
+
+        // Query to get the cart products with their related models
+        $adressQuery = $customer->cards();
+
+        // Get all cart products (not paginated)
+        $customerCards = $adressQuery->get();
+
+
+        // Return the cart products and total
+        return ApiResponse::sendResponse(code: 200, msg: "sucesss", data: CustomerCardResource::collection($customerCards));
+    }
     /**
      * Display the specified resource.
      *

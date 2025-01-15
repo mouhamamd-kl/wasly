@@ -21,11 +21,13 @@ Route::middleware(['auth:sanctum', 'abilities:' . Constants::store_owner_guard])
 });
 // Custom routes
 Route::get('/', [StoreController::class, 'index'])->name('stores.index');
-Route::get('/{id}', [StoreController::class, 'show'])->name('stores.show');
 Route::get('/latest', [StoreController::class, 'latest'])->name('stores.latest');
 Route::get('/search', [StoreController::class, 'searchApi'])->name('stores.search'); // API-specific search
-Route::get('/nearby', [StoreController::class, 'nearbyApi'])->name('stores.nearby');
+Route::get('/nearbyyy', function () {
+    return ApiResponse::sendResponse(404, 'Customer not found');
+})->name('stores.nearby');
 Route::get('/popular/orders', [StoreController::class, 'popularByOrdersApi'])->name('stores.popular.orders');
 Route::get('/popular/ratings', [StoreController::class, 'popularByRatingsApi'])->name('stores.popular.ratings');
 
-Route::get('/{storeId}/products/paginated', [ProductController::class, 'getStoreProductsApi'])->name('products.paginated');
+Route::get('/{id}', [StoreController::class, 'show'])->name('stores.show');
+Route::get('/{storeId}/products', [ProductController::class, 'getStoreProductsApi'])->name('products.paginated');

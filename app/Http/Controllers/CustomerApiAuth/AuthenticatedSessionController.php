@@ -6,6 +6,7 @@ use App\Constants\Constants;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Resources\CustomerResource;
 use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -47,7 +48,7 @@ class AuthenticatedSessionController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
             ];
-            return ApiResponse::sendResponse(200, 'User Account Logged In Successfully', $data);
+            return ApiResponse::sendResponse(200, 'User Account Logged In Successfully', new CustomerResource($user));
         }
 
         // Invalid credentials

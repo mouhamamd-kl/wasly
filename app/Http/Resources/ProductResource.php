@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,11 +22,11 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'stock_quantity' => $this->stock_quantity,
             'price' => $this->price,
-            'is_active' => $this->is_active,
-            'category_id' => $this->category_id, // Transform associated category if loaded
-            'store_id' => $this->store_id, // Transform associated store if loaded
             'created_at' => $this->created_at->toIso8601String(),
             'updated_at' => $this->updated_at->toIso8601String(),
+            'is_active' => $this->is_active,
+            'category' =>new CategoryResource($this->whenLoaded('category')), // Transform associated category if loaded
+            'store' => new StoreResource($this->whenLoaded('store')), // Transform associated store if loaded
         ];
     }
 }

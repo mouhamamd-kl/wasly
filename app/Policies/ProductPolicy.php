@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Constants\Constants;
 use App\Models\Product;
+use App\Models\StoreOwner;
 use App\Models\User;
 
 class ProductPolicy
@@ -15,7 +16,7 @@ class ProductPolicy
     {
         //
     }
-    public function create(User $user)
+    public function create(StoreOwner $user)
     {
         $isStoreOwner = $user->tokenCan(Constants::store_owner_guard);
 
@@ -23,7 +24,7 @@ class ProductPolicy
 
         return $isStoreOwner || $isAdmin;
     }
-    public function manage(User $user, Product $product)
+    public function manage(StoreOwner $user, Product $product)
     {
         $isStoreOwner = $user->tokenCan(Constants::store_owner_guard) &&
             $user->id == $product->store->store_owner_id;

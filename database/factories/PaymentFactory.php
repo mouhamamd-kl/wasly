@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\PaymentMethod;
 use App\Models\PaymentStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,9 +20,13 @@ class PaymentFactory extends Factory
     public function definition(): array
     {
         return [
-            'order_id' => Order::inRandomOrder()->value('id') ?? Order::factory(),
-            'payment_status_id' => PaymentStatus::inRandomOrder()->value('id') ?? PaymentStatus::factory(),
-            'payment_method_id' => PaymentMethod::inRandomOrder()->value('id') ?? PaymentMethod::factory(),
+            'order_item_id' => OrderItem::inRandomOrder()->value('id') 
+                ?? OrderItem::factory()->create()->id, // Fetch random or create a new order item
+            'payment_status_id' => PaymentStatus::inRandomOrder()->value('id') 
+                ?? PaymentStatus::factory()->create()->id, // Fetch random or create a new payment status
+            'payment_method_id' => PaymentMethod::inRandomOrder()->value('id') 
+                ?? PaymentMethod::factory()->create()->id, // Fetch random or create a new payment method
+            'card_id' => $this->faker->creditCardNumber(), // Random card ID
             'amount' => $this->faker->randomFloat(2, 10, 500), // Random amount between 10 and 500
         ];
     }

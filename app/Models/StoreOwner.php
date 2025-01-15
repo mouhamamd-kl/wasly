@@ -31,23 +31,23 @@ class StoreOwner extends Authenticatable implements MustVerifyEmail
      */
     protected $guarded = [
         'id',                // Primary Key
-    ];  
+    ];
     public function store()
     {
-         return $this->hasOne(Store::class);
+        return $this->hasOne(Store::class);
     }
     public static function findOrFailWithResponse(int $id)
     {
-         $storeOwner = self::find($id);
+        $storeOwner = self::find($id);
 
-         if (!$storeOwner) {
-              // Return the custom API response
-              ApiResponse::sendResponse(404, 'Store Owner Not Found')->throwResponse();
-         }
+        if (!$storeOwner) {
+            // Return the custom API response
+            ApiResponse::sendResponse(404, 'Store Owner Not Found')->throwResponse();
+        }
 
-         return $storeOwner;
+        return $storeOwner;
     }
-        /**
+    /**
      * Send the password reset notification.
      *
      * @param string $token

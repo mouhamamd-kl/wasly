@@ -28,20 +28,8 @@ class RegisteredUserController extends Controller
         // Validate the incoming request data
         $validated = $request->validated();
 
-        // Handle photo upload
-        $photoData = null;
+        $photoData = ImagePath(request: $request, ImageReplacePath: 'defaults/images/defaultUserImage.png');
 
-        // Handle photo upload
-        if ($request->hasFile('photo')) {
-            // Get the file content
-            $file = $request->file('photo');
-            $photoData = base64_encode(file_get_contents($file));
-        }
-        // If no photo is uploaded, use the default user image and encode it
-        if ($photoData === null) {
-            $defaultImagePath = public_path('defaults/images/defaultUserImage.png');
-            $photoData = base64_encode(file_get_contents($defaultImagePath));
-        }
         // Create the delivery record in the database
         $delivery = Delivery::create([
             'first_name' => $validated['first_name'],
@@ -63,7 +51,7 @@ class RegisteredUserController extends Controller
 
         // Generate the API token for the delivery
         $data = [
-            'token' => $delivery->createToken(Constants::delivery_guard.'auth_token', [Constants::delivery_guard])->plainTextToken,
+            'token' => $delivery->createToken(Constants::delivery_guard . 'auth_token', [Constants::delivery_guard])->plainTextToken,
             'first_name' => $delivery->first_name,
             'last_name' => $delivery->last_name,
             'email' => $delivery->email,

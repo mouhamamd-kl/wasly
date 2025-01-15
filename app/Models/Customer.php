@@ -78,6 +78,10 @@ class Customer extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Order::class);
     }
+    public function cards()
+    {
+        return $this->hasMany(CustomerCard::class);
+    }
     /**
      * Get nearby stores based on the customer's default address.
      *

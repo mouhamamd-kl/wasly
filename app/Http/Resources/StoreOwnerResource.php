@@ -23,9 +23,11 @@ class StoreOwnerResource extends JsonResource
             'phone' => $this->phone,
             'email' => $this->email,
             'photo' => $this->photo,
+            'chat_id' => $this->chat_id,
             'email_verified_at' => $this->email_verified_at,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
+            'store' => new StoreResource($this->whenLoaded('store')),
         ];
     }
 }

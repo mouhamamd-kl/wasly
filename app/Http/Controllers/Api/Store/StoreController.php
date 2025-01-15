@@ -30,28 +30,11 @@ class StoreController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $customer = Store::latest()->paginate(10);
-        if (request()->is('api/*')) {
-            return PaginationHelper::paginateResponse($customer, StoreResource::class, Store::class);
-        }
-        return view('admin.auth.master', get_defined_vars());
+        $products = Store::get();
+        return ApiResponse::sendResponse(200, 'sucess', StoreResource::collection($products));
     }
-
-    public function latest(Request $request)
-    {
-        $stores = Store::latest()->take(10)->get();
-        if (request()->is('api/*')) {
-            if (count($stores) > 0) {
-                return ApiResponse::sendResponse(code: 200, msg: 'latest Stores retrived successfully', data: StoreResource::collection($stores));
-            }
-            return ApiResponse::sendResponse(code: 200, msg: 'no Stores found', data: []);
-        }
-        return view('admin.auth.master', get_defined_vars());
-    }
-
-
     public function searchStores(Request $request)
     {
         return Store::query()
@@ -64,15 +47,14 @@ class StoreController extends Controller
             'name' => 'nullable|string|max:255',
         ]);
 
-        $paginate = getPaginate($request);
         $query = $this->searchStores($request);
-        return $query->paginate($paginate);
+        return $query->get();
     }
     public function searchApi(Request $request)
     {
         // return ApiResponse::sendResponse(code: 200, msg: $request->all());
         $stores = $this->search($request);
-        return PaginationHelper::paginateResponse(originData: $stores, resourceClass: StoreResource::class, modelClass: Store::class);
+        return  ApiResponse::sendResponse(200, 'sucess', StoreResource::collection($stores));
     }
     // public function search(Request $request)
     // {
@@ -231,6 +213,7 @@ class StoreController extends Controller
     public function destroy(Request $request, $id)
     {
         $authCustomer = $request->user();
+
         $store = $this->findStoreById($id);
         if (!$store) {
             return ApiResponse::sendResponse(
@@ -251,25 +234,27 @@ class StoreController extends Controller
         $radius = $request->input('radius', 10);
         $limit = $request->input('limit', 10);
         $customer = $request->user();
-
         if (!$customer) {
             return ApiResponse::sendResponse(404, 'Customer not found');
         }
-
+        $defaultAddress = $customer->addresses()->where('is_default', true)->first();
+        if (!$defaultAddress) {
+            return ApiResponse::sendResponse(404, 'No default address found');
+        }
         $defaultAddress = $customer->addresses()->where('is_default', true)->first();
 
         if (!$defaultAddress) {
             return ApiResponse::sendResponse(404, 'No default address found');
         }
-        $paginate = getPaginate($request);
-        $nearStores = Store::getNearby($defaultAddress->latitude, $defaultAddress->longitude, $radius, $limit)->paginate($paginate);
+        $nearStores = Store::getNearby($defaultAddress->latitude, $defaultAddress->longitude, $radius, $limit)->get();
         return $nearStores;
     }
     public function nearbyApi(Request $request)
     {
         $nearStores = $this->nearby($request);
+
         return ApiResponse::sendResponse(200, 'Nearby stores retrieved successfully', [
-            'stores' => $nearStores,
+            'stores' => StoreResource::collection($nearStores),
             'count' => $nearStores->count(),
         ]);
     }
@@ -278,13 +263,12 @@ class StoreController extends Controller
         // With Limit
         // $limit = $request->input('limit', 10);
         // $popularStores = Store::getPopularByOrders($limit);
-        $paginate = getPaginate($request);
-        return  $popularStores = Store::getPopularByOrders()->paginate($paginate);
+        return  $popularStores = Store::getPopularByOrders()->get();
     }
     public function popularByOrdersApi(Request $request)
     {
         $popularStores = $this->popularByOrders($request);
-        return  PaginationHelper::paginateResponse($popularStores, StoreResource::class, Store::class);
+        return  ApiResponse::sendResponse(200, 'sucess', StoreResource::collection($popularStores));
     }
     public function popularByRatings(Request $request)
     {
@@ -292,13 +276,13 @@ class StoreController extends Controller
         // $limit = $request->input('limit', 10);
         // $popularStores = Store::getPopularByRatings($limit);
         $paginate = getPaginate($request);
-        $popularStores = Store::getPopularByRatings()->paginate($paginate);
+        $popularStores = Store::getPopularByRatings()->get();
         return $popularStores;
     }
     public function popularByRatingsApi(Request $request)
     {
         $popularStores = $this->popularByRatings($request);
-        return  PaginationHelper::paginateResponse($popularStores, StoreResource::class, Store::class);
+        return  ApiResponse::sendResponse(200, 'sucess', StoreResource::collection($popularStores));
     }
 
 

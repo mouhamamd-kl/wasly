@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreignIdFor(Rating::class)->constrained('ratings')->onDelete('cascade'); // Foreign key to ratings table
         
             // Review details
-            $table->string('description'); // Review description
+            $table->text('description'); // Review description
         
             // Timestamps
             $table->timestamps(); // created_at and updated_at

@@ -26,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: [
             'api/*',
+            '/telegram/webhook',
+            'api/telegram/webhook',
         ]);
 
         $middleware->api(prepend: [
@@ -77,7 +79,6 @@ return Application::configure(basePath: dirname(__DIR__))
                 $previousException = $previousException->getPrevious();
             }
             // If MissingAbilityException is not found, proceed with default handling
-            return null;
+            return ApiResponse::sendResponse(code: 403, msg: 'you are not authorized', data: []);
         });
-        
     })->create();

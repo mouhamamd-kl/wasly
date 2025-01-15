@@ -13,15 +13,13 @@ class OrderStatusSeeder extends Seeder
      */
     public function run(): void
     {
-         // Predefined order statuses
-         $statuses = [
+        // Predefined order statuses
+        $statuses = [
             'Pending',
-            'Processed',
-            'Shipped',
-            'Delivered',
             'Cancelled',
-            'Returned',
-            'Out for Delivery',
+            'Rejected',
+            'Accepted',
+            'Partially Accepted'
         ];
 
         // Create each order status in the database

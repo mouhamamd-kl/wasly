@@ -37,9 +37,8 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $paginate = getPaginate($request);
-        $products = Product::latest()->paginate($paginate);
-        return PaginationHelper::paginateResponse($products, ProductResource::class, Product::class);
+        $products = Product::get();
+        return ApiResponse::sendResponse(200, 'sucess', ProductResource::collection($products));
     }
 
     public function latest(Request $request)
@@ -49,10 +48,10 @@ class ProductController extends Controller
     }
     public function latestApi(Request $request)
     {
-        $paginate = getPaginate($request);
-        $products = $this->latest($request);
-        $productsPaginate = $products->paginate($paginate);
-        return PaginationHelper::paginateResponse($products, ProductResource::class, Product::class);
+        $products = $this->latest($request)->get();
+        // $productsPaginate = $products->paginate($paginate);
+        // return PaginationHelper::paginateResponse($products, ProductResource::class, Product::class);
+        return ApiResponse::sendResponse(200, 'products recived sucessfully', ProductResource::collection($products));
     }
 
 
@@ -80,15 +79,16 @@ class ProductController extends Controller
             'sort' => 'nullable|in:high_to_low,low_to_high',
         ]);
 
-        $paginate = getPaginate($request);
-        $query = $this->searchProducts($request);
-        return $query->paginate($paginate);
+        // $paginate = getPaginate($request);
+        // $query = $this->searchProducts($request);
+        // return $query->paginate($paginate);
+
     }
     public function searchApi(Request $request)
     {
         // return ApiResponse::sendResponse(code: 200, msg: $request->all());
-        $products = $this->search($request);
-        return PaginationHelper::paginateResponse(originData: $products, resourceClass: ProductResource::class, modelClass: Product::class);
+        $products = $this->searchProducts($request)->get();
+        return ApiResponse::sendResponse(200, 'sucess', ProductResource::collection($products));
     }
     /**
      * Display the specified resource.
@@ -98,7 +98,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::find($id);
+        $product = Product::with(['category', 'store'])->find($id);
         if ($id) {
             return ApiResponse::sendResponse(code: 404, msg: 'product retrived Successfully', data: new ProductResource($product));
         }
@@ -171,10 +171,9 @@ class ProductController extends Controller
         // Authenticate and authorize the request
         /** @var StoreOwner $storeOwner */
         $storeOwner = $request->user(); // Assuming authenticated user has a store
-        $this->authorize('create', Product::class);  // This ensures that the 'create' policy is applied to the Product model
         // Process and validate the request
         $validatedData = $this->processValidatedData($request);
-        $validatedData['photo'] = ImagePath(request: $request, ImageReplacePath: 'public\defaults\images\defaultProductImage.png');
+        $validatedData['photo'] = ImagePath(request: $request, ImageReplacePath: 'defaults\images\defaultProductImage.png');
         // Create a new product with the validated data
         $product = Product::create($validatedData + ['store_id' => $storeOwner->store->id]);
 
@@ -198,7 +197,7 @@ class ProductController extends Controller
         $authCustomer = $request->user();
         $product = Product::findOrFailWithResponse($id);
         // Find the product by ID
-        $this->authorize('manage', Product::class);
+        $this->authorize('manage', $product,$authCustomer);
         $product->delete();
         return ApiResponse::sendResponse(code: 201, msg: 'Product Deleted Successfully', data: []);
     }
@@ -223,13 +222,14 @@ class ProductController extends Controller
         $productsQuery = $this->getStoreProducts($storeId);
 
         // Determine pagination size
-        $paginate = getPaginate($request);
+        // $paginate = getPaginate($request);
 
         // Paginate the products
-        $productsPaginate = $productsQuery->paginate($paginate);
+        // $productsPaginate = $productsQuery->paginate($paginate);
+        $products = $productsQuery->get();
 
         // Return a paginated response
-        return PaginationHelper::paginateResponse($productsPaginate, ProductResource::class, Product::class);
+        return ApiResponse::sendResponse(200, 'sucess', ProductResource::collection($products));
     }
     public function getCategoryProducts($categoryId)
     {
@@ -245,12 +245,13 @@ class ProductController extends Controller
         $productsQuery = $this->getStoreProducts($storeId);
 
         // Determine pagination size
-        $paginate = getPaginate($request);
+        // $paginate = getPaginate($request);
 
         // Paginate the products
-        $productsPaginate = $productsQuery->paginate($paginate);
+        // $productsPaginate = $productsQuery->paginate($paginate);
+        $products = $productsQuery->get();
 
         // Return a paginated response
-        return PaginationHelper::paginateResponse($productsPaginate, ProductResource::class, Product::class);
+        return ApiResponse::sendResponse(200, 'success', ProductResource::collection($products));
     }
 }

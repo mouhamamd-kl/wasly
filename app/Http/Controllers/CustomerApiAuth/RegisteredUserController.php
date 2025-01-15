@@ -6,6 +6,7 @@ use App\Constants\Constants;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Customer\CustomerRegisterRequest;
+use App\Http\Resources\CustomerResource;
 use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -28,20 +29,10 @@ class RegisteredUserController extends Controller
         // Validate the incoming request data
         $validated = $request->validated();
 
-        // Handle photo upload
-        $photoData = null;
+        // Validate the incoming request data
 
         // Handle photo upload
-        if ($request->hasFile('photo')) {
-            // Get the file content
-            $file = $request->file('photo');
-            $photoData = base64_encode(file_get_contents($file));
-        }
-        // If no photo is uploaded, use the default user image and encode it
-        if ($photoData === null) {
-            $defaultImagePath = public_path('defaults/images/defaultUserImage.png');
-            $photoData = base64_encode(file_get_contents($defaultImagePath));
-        }
+        $photoData = ImagePath(request: $request, ImageReplacePath: 'defualts/images/defaultUserImage.jpg');
         // Create the customer record in the database
         $customer = Customer::create([
             'first_name' => $validated['first_name'],
@@ -63,7 +54,7 @@ class RegisteredUserController extends Controller
 
         // Generate the API token for the customer
         $data = [
-            'token' => $customer->createToken(Constants::customer_guard.'auth_token', [Constants::customer_guard])->plainTextToken,
+            'token' => $customer->createToken(Constants::customer_guard . 'auth_token', [Constants::customer_guard])->plainTextToken,
             'first_name' => $customer->first_name,
             'last_name' => $customer->last_name,
             'email' => $customer->email,
@@ -71,6 +62,6 @@ class RegisteredUserController extends Controller
             'photo' => $photoData,  // Return the photo URL if available
         ];
 
-        return ApiResponse::sendResponse(201, 'Customer Account Created Successfully. Please check your email for verification.', $data);
+        return ApiResponse::sendResponse(201, 'Customer Account Created Successfully. Please check your email for verification.', new CustomerResource($customer));
     }
 }
