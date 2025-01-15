@@ -37,7 +37,9 @@ Route::prefix('/store-owner')->name('storeOwner.')->group(function () {
     require __DIR__ . '/storeOwner/storeOwnerApiRoute.php';
 });
 
-
+Route::prefix('/product')->name('product.')->group(function(){
+    require __DIR__ . '/product/productApiRoute.php';
+});
 // Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 //     return ApiResponse::sendResponse(code: 200, msg: 'user info', data: $request->user());
 // });
