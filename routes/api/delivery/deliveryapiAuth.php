@@ -1,7 +1,7 @@
 <?php
 
 use App\Helpers\ApiResponse;
-use App\Constants\constants;
+use App\Constants\Constants;
 use App\Http\Controllers\DeliveryApiAuth\AuthenticatedSessionController;
 use App\Http\Controllers\DeliveryApiAuth\CustomEmailVerificationController;
 use App\Http\Controllers\DeliveryApiAuth\EmailVerificationNotificationController;
@@ -60,5 +60,5 @@ Route::post('email/verification-notification', [CustomEmailVerificationControlle
     ->name('verification.send');
 // Route::get('verify-email/{id}/{token}', [CustomEmailVerificationController::class, 'verify'])->name('testo.test');
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-    ->middleware(['auth:sanctum', 'abilities:' . constants::delivery_guard])
+    ->middleware(['auth:sanctum', 'abilities:' . Constants::delivery_guard])
     ->name('logout');

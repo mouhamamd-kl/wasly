@@ -24,6 +24,11 @@ class Product extends Model
           return $this->hasMany(Review::class);
      }
 
+     public function ratings()
+     {
+          return $this->hasManyThrough(Rating::class, Review::class, 'product_id', 'id', 'id', 'rating_id');
+     }
+
      // Define the relationship with customers through the cart pivot table
      public function customers()
      {

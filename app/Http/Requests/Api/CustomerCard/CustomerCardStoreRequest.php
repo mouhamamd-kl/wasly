@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Api\Product;
+namespace app\Http\Requests\Api\CustomerCard;
 
 
 use Illuminate\Contracts\Validation\Rule;

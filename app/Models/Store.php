@@ -31,7 +31,15 @@ class Store extends Model
      {
           return $this->hasManyThrough(Review::class, Product::class);
      }
-     
+     public function getOrderItemsByStatus(string $status)
+     {
+          return OrderItem::whereHas('order', function ($query) use ($status) {
+               $query->where('store_id', $this->id)
+                    ->whereHas('status', function ($statusQuery) use ($status) {
+                         $statusQuery->where('name', $status);
+                    });
+          })->get();
+     }
      public static function getNearby($lat, $lng, $radius = 10, $limit = 10)
      {
           return static::select(DB::raw("*,
@@ -74,7 +82,7 @@ class Store extends Model
 
           if (!$store) {
                // Return the custom API response
-              return ApiResponse::sendResponse(404, 'Store Not Found');
+               return ApiResponse::sendResponse(404, 'Store Not Found');
           }
 
           return $store;

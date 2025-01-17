@@ -12,6 +12,7 @@ use App\Http\Requests\Api\Customer\CustomerUpdateRequest;
 use App\Http\Requests\Api\Store\StoreUpdateRequest;
 use App\Http\Resources\AdResource;
 use App\Http\Resources\CustomerResource;
+use App\Http\Resources\OrderItemResource;
 use App\Http\Resources\ReviewResource;
 use App\Http\Resources\StoreResource;
 use App\Models\Ad;
@@ -40,7 +41,14 @@ class StoreController extends Controller
         return Store::query()
             ->filterByName($request->input('name'));
     }
+    public function fetchStoreOrderItemsByStatus(Request $request, $storeId)
+    {
+        $store = Store::findOrFail($storeId);
+        $status = $request->get('status', 'pending'); // Default to 'pending' if not provided
+        $orderItems = $store->getOrderItemsByStatus($status);
 
+        return ApiResponse::sendResponse(200, 'sucess', OrderItemResource::collection($orderItems));
+    }
     public function search(Request $request)
     {
         $validated = $request->validate([

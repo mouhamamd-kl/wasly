@@ -22,11 +22,10 @@ class CustomerResource extends JsonResource
             'gender' => $this->gender,
             'phone' => $this->phone,
             'email' => $this->email,
-            'photo_url' => $this->photo_url,
+            'photo' => $this->photo,
             'email_verified_at' => $this->email_verified_at,
             'chat_id' => $this->chat_id,
             'addresses' => CustomerAddressResource::collection($this->whenLoaded('addresses')), // Include addresses
-            
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
         ];

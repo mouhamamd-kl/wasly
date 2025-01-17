@@ -6,6 +6,7 @@ use App\Constants\Constants;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Delivery\DeliveryRegisterRequest;
+use App\Http\Resources\DeliveryResource;
 use App\Models\Delivery;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -52,11 +53,7 @@ class RegisteredUserController extends Controller
         // Generate the API token for the delivery
         $data = [
             'token' => $delivery->createToken(Constants::delivery_guard . 'auth_token', [Constants::delivery_guard])->plainTextToken,
-            'first_name' => $delivery->first_name,
-            'last_name' => $delivery->last_name,
-            'email' => $delivery->email,
-            'phone' => $delivery->phone,
-            'photo' => $photoData,  // Return the photo URL if available
+            'account' => new DeliveryResource($delivery)
         ];
 
         return ApiResponse::sendResponse(201, 'Delivery Account Created Successfully. Please check your email for verification.', $data);

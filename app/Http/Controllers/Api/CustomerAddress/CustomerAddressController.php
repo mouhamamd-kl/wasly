@@ -89,11 +89,17 @@ class CustomerAddressController extends Controller
     public function create(CustomerAddressRequest $request)
     {
         // Authenticate and authorize the request
-        /** @var StoreOwner $storeOwner */
+        /** @var Customer $storeOwner */
         $storeOwner = $request->user(); // Assuming authenticated user has a store
         $this->authorize('create', CustomerAddress::class);  // This ensures that the 'create' policy is applied to the Product model
         // Process and validate the request
         $validatedData = $this->processValidatedData($request);
+        $validatedData['customer_id'] = $storeOwner->id;
+        return ApiResponse::sendResponse(
+            code: 201,
+            msg: 'Category created successfully',
+            data:$validatedData
+        );
         // Create a new product with the validated data
         $product = CustomerAddress::create($validatedData);
         // Return a success response with the newly created product
@@ -103,15 +109,15 @@ class CustomerAddressController extends Controller
             data: new CustomerAddressResource($product)
         );
     }
-    /**
-     * Process validated data for special fields like password and photo.
-     */
     private function processValidatedData($request)
     {
         $validatedData = $request->validated();
-        $validatedData['photo'] = ImagePath(request: $request, ImageReplacePath: 'defaults/images/defaultProductImage.png');
         return $validatedData;
     }
+    /**
+     * Process validated data for special fields like password and photo.
+     */
+
     /**
      * Remove the specified resource from storage.
      *

@@ -6,6 +6,7 @@ use App\Constants\Constants;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Resources\StoreOwnerResource;
 use App\Models\Delivery;
 use App\Models\StoreOwner;
 use App\Models\User;
@@ -45,8 +46,7 @@ class AuthenticatedSessionController extends Controller
         if (Auth::guard(Constants::store_owner_guard)->attempt($credentials)) {
             $data = [
                 'token' => $user->createToken(Constants::store_owner_guard.'_auth_token',[Constants::store_owner_guard])->plainTextToken,
-                'name' => $user->name,
-                'email' => $user->email,
+                'account' => new StoreOwnerResource($user)
             ];
             return ApiResponse::sendResponse(200, 'User Account Logged In Successfully', $data);
         }

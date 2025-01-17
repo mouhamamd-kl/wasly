@@ -30,44 +30,128 @@ use Illuminate\Validation\UnauthorizedException;
 class ProductController extends Controller
 {
     use AuthorizesRequests;
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
-        $products = Product::get();
-        return ApiResponse::sendResponse(200, 'sucess', ProductResource::collection($products));
+        $products = Product::withAvg('ratings as average_rating', 'rating')
+            ->with(['category', 'store'])
+            ->get();
+
+        return ApiResponse::sendResponse(200, 'success', ProductResource::collection($products));
     }
 
     public function latest(Request $request)
     {
-        $products = Product::latest()->take(10);
+        $products = Product::withAvg('ratings as average_rating', 'rating')
+            ->with(['category', 'store'])
+            ->latest()
+            ->take(10)
+            ->get();
+
         return $products;
     }
+
     public function latestApi(Request $request)
     {
-        $products = $this->latest($request)->get();
-        // $productsPaginate = $products->paginate($paginate);
-        // return PaginationHelper::paginateResponse($products, ProductResource::class, Product::class);
-        return ApiResponse::sendResponse(200, 'products recived sucessfully', ProductResource::collection($products));
+        $products = $this->latest($request);
+
+        return ApiResponse::sendResponse(200, 'products received successfully', ProductResource::collection($products));
+    }
+
+    public function getMostPopularProducts()
+    {
+        $popularProducts = Product::withAvg('ratings as average_rating', 'rating') // Correct column name
+            ->with(['store', 'category']) // Include related models
+            ->withCount('orderItems') // Count related order items
+            ->orderBy('order_items_count', 'desc') // Sort by the count in descending order
+            ->take(10) // Limit to the top 10 most popular products
+            ->get();
+
+        return ApiResponse::sendResponse(
+            200,
+            'Most popular products retrieved successfully',
+            ProductResource::collection($popularProducts)
+        );
     }
 
 
-
-    // In Controller
 
     public function searchProducts(Request $request)
     {
-        return Product::query()
-            ->filterByStore($request->input('store_id')) // Added store filter
+        return Product::withAvg('ratings as average_rating', 'rating')
+            ->with(['category', 'store'])
+            ->filterByStore($request->input('store_id'))
             ->filterByCategory($request->input('category_id'))
             ->filterByName($request->input('name'))
             ->filterByPriceRange($request->input('min_price'), $request->input('max_price'))
             ->sortByPrice($request->input('sort'))
             ->where('is_active', true);
     }
+
+    public function searchApi(Request $request)
+    {
+        $products = $this->searchProducts($request)->get();
+
+        return ApiResponse::sendResponse(200, 'success', ProductResource::collection($products));
+    }
+
+    public function show($id)
+    {
+        $product = Product::withAvg('ratings as average_rating', 'rating')
+            ->with(['category', 'store'])
+            ->find($id);
+
+        if ($product) {
+            return ApiResponse::sendResponse(200, 'Product retrieved successfully', new ProductResource($product));
+        }
+
+        return ApiResponse::sendResponse(404, 'Product not found', []);
+    }
+
+    public function getStoreProducts($storeId)
+    {
+        $store = Store::findOrFailWithResponse($storeId);
+
+        return Product::withAvg('ratings as average_rating', 'rating')
+            ->with(['category', 'store'])
+            ->ByStore($storeId)
+            ->ByActive()
+            ->latest();
+    }
+
+    public function getStoreProductsApi(Request $request, $storeId)
+    {
+        $productsQuery = $this->getStoreProducts($storeId);
+
+        $products = $productsQuery->get();
+
+        return ApiResponse::sendResponse(200, 'success', ProductResource::collection($products));
+    }
+
+    public function getCategoryProducts($categoryId)
+    {
+        $category = Category::findOrFailWithResponse($categoryId);
+
+        return Product::withAvg('ratings as average_rating', 'rating')
+            ->with(['category', 'store'])
+            ->ByCategory($categoryId)
+            ->latest();
+    }
+
+    public function getCategoryProductsApi(Request $request, $storeId)
+    {
+        $productsQuery = $this->getStoreProducts($storeId);
+
+        $products = $productsQuery->get();
+
+        return ApiResponse::sendResponse(200, 'success', ProductResource::collection($products));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
 
     public function search(Request $request)
     {
@@ -83,26 +167,6 @@ class ProductController extends Controller
         // $query = $this->searchProducts($request);
         // return $query->paginate($paginate);
 
-    }
-    public function searchApi(Request $request)
-    {
-        // return ApiResponse::sendResponse(code: 200, msg: $request->all());
-        $products = $this->searchProducts($request)->get();
-        return ApiResponse::sendResponse(200, 'sucess', ProductResource::collection($products));
-    }
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $product = Product::with(['category', 'store'])->find($id);
-        if ($id) {
-            return ApiResponse::sendResponse(code: 404, msg: 'product retrived Successfully', data: new ProductResource($product));
-        }
-        return ApiResponse::sendResponse(code: 404, msg: 'product Not Found', data: []);
     }
 
     /**
@@ -197,7 +261,7 @@ class ProductController extends Controller
         $authCustomer = $request->user();
         $product = Product::findOrFailWithResponse($id);
         // Find the product by ID
-        $this->authorize('manage', $product,$authCustomer);
+        $this->authorize('manage', $product, $authCustomer);
         $product->delete();
         return ApiResponse::sendResponse(code: 201, msg: 'Product Deleted Successfully', data: []);
     }
@@ -207,51 +271,4 @@ class ProductController extends Controller
      * @param  int  $storeId
      * @return \Illuminate\Http\Response
      */
-    public function getStoreProducts($storeId)
-    {
-        // Validate that the store exists
-        $store = Store::findOrFailWithResponse($storeId);
-
-        // Fetch the products for the specified store
-        return Product::ByStore($storeId)->ByActive()->latest();
-    }
-
-    public function getStoreProductsApi(Request $request, $storeId)
-    {
-        // Get the products query
-        $productsQuery = $this->getStoreProducts($storeId);
-
-        // Determine pagination size
-        // $paginate = getPaginate($request);
-
-        // Paginate the products
-        // $productsPaginate = $productsQuery->paginate($paginate);
-        $products = $productsQuery->get();
-
-        // Return a paginated response
-        return ApiResponse::sendResponse(200, 'sucess', ProductResource::collection($products));
-    }
-    public function getCategoryProducts($categoryId)
-    {
-        // Validate that the store exists
-        $category = Category::findOrFailWithResponse($categoryId);
-
-        // Fetch the products for the specified store
-        return Product::ByCategory($categoryId)->latest();
-    }
-    public function getCategoryProductsApi(Request $request, $storeId)
-    {
-        // Get the products query
-        $productsQuery = $this->getStoreProducts($storeId);
-
-        // Determine pagination size
-        // $paginate = getPaginate($request);
-
-        // Paginate the products
-        // $productsPaginate = $productsQuery->paginate($paginate);
-        $products = $productsQuery->get();
-
-        // Return a paginated response
-        return ApiResponse::sendResponse(200, 'success', ProductResource::collection($products));
-    }
 }

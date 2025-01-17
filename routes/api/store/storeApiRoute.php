@@ -15,6 +15,7 @@ Route::get('/', function () {
 });
 // Resource routes for basic CRUD operations
 Route::middleware(['auth:sanctum', 'abilities:' . Constants::store_owner_guard])->group(function () {
+    Route::get('/{storeId}/order-items', [StoreController::class, 'fetchStoreOrderItemsByStatus']);
     Route::post('/', [StoreController::class, 'create'])->name('stores.create');
     Route::put('/{id}', [StoreController::class, 'update'])->name('stores.update');
     Route::delete('/{id}', [StoreController::class, 'destroy'])->name('stores.destroy');
@@ -23,7 +24,7 @@ Route::middleware(['auth:sanctum', 'abilities:' . Constants::store_owner_guard])
 Route::get('/', [StoreController::class, 'index'])->name('stores.index');
 Route::get('/latest', [StoreController::class, 'latest'])->name('stores.latest');
 Route::get('/search', [StoreController::class, 'searchApi'])->name('stores.search'); // API-specific search
-Route::get('/nearbyyy', function () {
+Route::get('/nearby', function () {
     return ApiResponse::sendResponse(404, 'Customer not found');
 })->name('stores.nearby');
 Route::get('/popular/orders', [StoreController::class, 'popularByOrdersApi'])->name('stores.popular.orders');

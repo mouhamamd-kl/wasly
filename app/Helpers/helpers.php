@@ -131,6 +131,16 @@ if (!function_exists('uploadToImgur')) {
         // Instead of returning a response, throw an exception
         throw new \Exception('No image uploaded and no default image provided');
     }
+    function uploadToImgurLocal($defaultImagePath = null, $photoKey = 'photo')
+    {
+        if ($defaultImagePath) {
+            $defaultImagePath = public_path($defaultImagePath);
+            return uploadToImgurFromPath($defaultImagePath);
+        }
+
+        // Instead of returning a response, throw an exception
+        throw new \Exception('No image uploaded and no default image provided');
+    }
 }
     // function ImagePath(Request $request, $photoKey = 'photo', $ImageReplacePath)
     // {

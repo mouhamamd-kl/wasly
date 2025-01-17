@@ -11,6 +11,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('orders')->name('orders.')->group(function () {
         // Customer routes
         Route::middleware('abilities:' . Constants::customer_guard)->group(function () {
+            Route::get('/items', [OrderController::class, 'getUserItemOrders'])->name('get');
             Route::post('/', [OrderController::class, 'createOrder'])->name('create');
             Route::post('/items/{orderItem?}/payment', [OrderController::class, 'processPayment'])->name('items.payment.process');
             Route::post('/items/{orderItem?}/cancel', [OrderController::class, 'cancelOrderItem'])->name('items.cancel');

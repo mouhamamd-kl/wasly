@@ -25,8 +25,9 @@ class ProductResource extends JsonResource
             'created_at' => $this->created_at->toIso8601String(),
             'updated_at' => $this->updated_at->toIso8601String(),
             'is_active' => $this->is_active,
-            'category' =>new CategoryResource($this->whenLoaded('category')), // Transform associated category if loaded
+            'category' => new CategoryResource($this->whenLoaded('category')), // Transform associated category if loaded
             'store' => new StoreResource($this->whenLoaded('store')), // Transform associated store if loaded
+            'average_rating' => $this->average_rating, // Include the average rati
         ];
     }
 }

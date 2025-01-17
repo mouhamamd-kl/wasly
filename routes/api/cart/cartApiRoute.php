@@ -9,11 +9,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\Cart\ProductController;
 
-Route::prefix('/cart')->name('cart.')->group(function () {
-    Route::middleware(['auth:sanctum', 'abilities:' . Constants::customer_guard])->group(function () {
-        Route::post('/add', [CartController::class, 'addToCart'])->name('add');
-        Route::delete('/{product_id}', [CartController::class, 'removeFromCart'])->name('cart.remove');
-        Route::get('/products', [CartController::class, 'getCartUserProductsApi'])->name('products');
-        Route::post('/clear', [CartController::class, 'clearCart'])->name('clear');
-    });
+Route::middleware(['auth:sanctum', 'abilities:' . Constants::customer_guard])->group(function () {
+    Route::post('/add', [CartController::class, 'addToCart'])->name('add');
+    Route::delete('/{product_id}', [CartController::class, 'removeFromCart'])->name('cart.remove');
+    Route::get('/products', [CartController::class, 'getCartUserProductsApi'])->name('products');
+    Route::post('/clear', [CartController::class, 'clearCart'])->name('clear');
 });

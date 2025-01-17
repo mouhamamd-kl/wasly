@@ -30,5 +30,6 @@ Route::get('/latest', [ProductController::class, 'latestApi']);
 // Route to search for products (search API)
 Route::post('/search', [ProductController::class, 'searchApi']);
 
+Route::get('/popular', [ProductController::class, 'getMostPopularProducts']);
 // Route to get a single product by ID (show)
 Route::get('/{id}', [ProductController::class, 'show']);

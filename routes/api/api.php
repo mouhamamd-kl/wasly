@@ -21,10 +21,6 @@ Route::get('/test', function () {
     return 'hello';
 });
 Route::prefix('/customer')->name('customer.')->group(function () {
-    // Routes for customers
-    // Route::middleware(['auth:sanctum', 'abilities:'.Constants::customer_guard])->get('/test', function (Request $request) {
-    //     return ApiResponse::sendResponse(code: 200, msg: 'user info', data: $request->user());
-    // });
 
     require __DIR__ . '/customerAddress/customerAdressApiRoute.php';
     require __DIR__ . '/favourite/favouriteApiRoute.php';
@@ -146,4 +142,36 @@ Route::post('/telegram/webhook', function (Request $request) {
             'text' => "Please use /start command ",
         ]);
     }
+});
+Route::post('/upload-image', function (Request $request) {
+    // Validate the incoming request
+
+
+    // Use the ImagePath function to handle the upload
+    $imagePath = ImagePath($request, 'defualts/images/defaultUserImage.jpg');
+
+    // Return the response
+    return response()->json([
+        'success' => true,
+        'message' => 'Image uploaded successfully',
+        'image_url' => $imagePath,
+    ]);
+});
+Route::post('/upload-image-link', function (Request $request) {
+    // Validate the incoming request
+
+
+    // Check if the input is a URL or a file
+    if (filter_var($request->input('photo'), FILTER_VALIDATE_URL)) {
+        $imagePath = ImagePath($request, 'defualts/images/defaultUserImage.jpg', $request->input('photo'));
+    } else {
+        $imagePath = ImagePath($request, 'defualts/images/defaultUserImage.jpg');
+    }
+
+    // Return the response
+    return response()->json([
+        'success' => true,
+        'message' => 'Image uploaded successfully',
+        'image_url' => $imagePath,
+    ]);
 });

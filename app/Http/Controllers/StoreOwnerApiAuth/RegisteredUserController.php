@@ -82,8 +82,7 @@ class RegisteredUserController extends Controller
         // Generate the API token for the StoreOwner
         $data = [
             'token' => $StoreOwner->createToken(Constants::store_owner_guard . 'auth_token', [Constants::store_owner_guard])->plainTextToken,
-            'storeOwner'=>new StoreOwnerResource($StoreOwner),
-            'store'=>new StoreResource($store)
+            'account'=>new StoreOwnerResource($StoreOwner),
         ];
 
         return ApiResponse::sendResponse(201, 'Account Created Successfully. Please check your email for verification.', $data);

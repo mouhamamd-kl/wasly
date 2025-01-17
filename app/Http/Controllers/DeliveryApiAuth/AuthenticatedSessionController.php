@@ -6,6 +6,7 @@ use App\Constants\Constants;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Resources\DeliveryResource;
 use App\Models\Delivery;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -44,8 +45,7 @@ class AuthenticatedSessionController extends Controller
         if (Auth::guard(Constants::delivery_guard)->attempt($credentials)) {
             $data = [
                 'token' => $user->createToken(Constants::delivery_guard.'_auth_token',[Constants::delivery_guard])->plainTextToken,
-                'name' => $user->name,
-                'email' => $user->email,
+                'account' => new DeliveryResource($user)
             ];
             return ApiResponse::sendResponse(200, 'User Account Logged In Successfully', $data);
         }

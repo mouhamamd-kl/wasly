@@ -20,7 +20,7 @@ class StoreFactory extends Factory
         return [
             'store_owner_id' => StoreOwner::inRandomOrder()->value('id') ?? StoreOwner::factory(), // Choose a random existing StoreOwner or create one if none exist
             'name' => $this->faker->company, // Random store name
-            'photo' => $this->faker->imageUrl(640, 480, 'business', true, 'store'), // Random store photo URL
+            'photo' => uploadToImgurLocal('defualts\images\defaultStoreImage.png'), // Random store photo URL
             'phone' => $this->faker->unique()->phoneNumber(),
             'latitude' => $this->faker->latitude(-90, 90), // Random latitude
             'longitude' => $this->faker->longitude(-180, 180), // Random longitude

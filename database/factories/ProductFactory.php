@@ -21,7 +21,7 @@ class ProductFactory extends Factory
         return [
             'name' => ucfirst($this->faker->words(2, true)), // Capitalizes the first word
 
-            'photo' => $this->faker->imageUrl(640, 480, 'products', true, 'Product'), // Random product image
+            'photo' => uploadToImgurLocal('defualts\images\defaultProductImage.png'), // Random product image
             'description' => $this->faker->sentence(10), // Random product description
             'stock_quantity' => $this->faker->numberBetween(1, 1000), // Random stock quantity
             'price' => $this->faker->randomFloat(2, 1, 1000), // Random price between 1 and 1000

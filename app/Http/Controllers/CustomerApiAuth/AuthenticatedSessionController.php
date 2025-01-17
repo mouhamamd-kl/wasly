@@ -21,14 +21,14 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request)
     {
-        
+
         if (!$request->validated()) {
             return ApiResponse::sendResponse(code: 422, msg: 'Login Validation Errors', data: $request->messages());
         }
         // Automatically validated by LoginRequest
         $credentials = $request->only(['email', 'password']);
         $user = Customer::where('email', $credentials['email'])->first();
-       
+
         // Check if the user exists
         if (!$user) {
             return ApiResponse::sendResponse(404, 'Account Cannot Be Found');
@@ -44,11 +44,10 @@ class AuthenticatedSessionController extends Controller
         // Attempt authentication for verified users
         if (Auth::guard(Constants::customer_guard)->attempt($credentials)) {
             $data = [
-                'token' => $user->createToken(Constants::customer_guard.'_auth_token',[Constants::customer_guard])->plainTextToken,
-                'name' => $user->name,
-                'email' => $user->email,
+                'token' => $user->createToken(Constants::customer_guard . '_auth_token', [Constants::customer_guard])->plainTextToken,
+                'account' => new CustomerResource($user)
             ];
-            return ApiResponse::sendResponse(200, 'User Account Logged In Successfully', new CustomerResource($user));
+            return ApiResponse::sendResponse(200, 'User Account Logged In Successfully', $data);
         }
 
         // Invalid credentials

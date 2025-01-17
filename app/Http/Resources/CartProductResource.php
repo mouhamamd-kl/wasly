@@ -15,7 +15,7 @@ class CartProductResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'product' => ProductResource::collection($this->whenLoaded('product')),,
+            'product' => ProductResource::collection($this->whenLoaded('product')),
             'count' => $this->pivot->count,
             'subtotal' => $this->price * $this->pivot->count,
         ];

@@ -2,7 +2,7 @@
 
 namespace App\Constants;
 
-class constants
+class Constants
 {
     public const customer_guard = 'customer';
     public const custumer_broker = 'customers';

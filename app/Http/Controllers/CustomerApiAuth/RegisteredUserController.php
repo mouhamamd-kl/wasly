@@ -55,13 +55,9 @@ class RegisteredUserController extends Controller
         // Generate the API token for the customer
         $data = [
             'token' => $customer->createToken(Constants::customer_guard . 'auth_token', [Constants::customer_guard])->plainTextToken,
-            'first_name' => $customer->first_name,
-            'last_name' => $customer->last_name,
-            'email' => $customer->email,
-            'phone' => $customer->phone,
-            'photo' => $photoData,  // Return the photo URL if available
+            'account' => new CustomerResource($customer)
         ];
 
-        return ApiResponse::sendResponse(201, 'Customer Account Created Successfully. Please check your email for verification.', new CustomerResource($customer));
+        return ApiResponse::sendResponse(201, 'Customer Account Created Successfully. Please check your email for verification.', $data);
     }
 }

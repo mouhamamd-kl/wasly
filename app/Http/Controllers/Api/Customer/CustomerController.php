@@ -89,7 +89,6 @@ class CustomerController extends Controller
      */
     public function update(CustomerUpdateRequest $request, $id)
     {
-        return ApiResponse::sendResponse(code: 200, msg: $request->user('sanctum'));
         // Authenticate and authorize the customer
         if (!$this->isAuthorized($request, $id)) {
             return ApiResponse::sendResponse(
