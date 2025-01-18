@@ -1,6 +1,11 @@
 @extends('admin.auth.master')
 @section('title','Sign In')
 @section('content')
+@if ($errors->has('session'))
+    <div class="alert alert-danger">
+        {{ $errors->first('session') }}
+    </div>
+@endif
 <div class="form_block">
     <div class="form_side">
         <div class="section_title">

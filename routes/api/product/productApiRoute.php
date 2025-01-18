@@ -12,16 +12,6 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 Route::get('/', function () {
     return ('hello from the Product');
 });
-Route::middleware(['auth:sanctum', 'abilities:' . Constants::store_owner_guard])->group(function () {
-    // Route to create a new product
-    Route::post('/', [ProductController::class, 'create']);
-
-    // Route to update an existing product by ID
-    Route::put('/{id}', [ProductController::class, 'update']);
-
-    // Route to delete a product by ID
-    Route::delete('/{id}', [ProductController::class, 'destroy']);
-});
 Route::get('/', [ProductController::class, 'index']);
 
 // Route to get the latest products
@@ -33,3 +23,14 @@ Route::post('/search', [ProductController::class, 'searchApi']);
 Route::get('/popular', [ProductController::class, 'getMostPopularProducts']);
 // Route to get a single product by ID (show)
 Route::get('/{id}', [ProductController::class, 'show']);
+Route::middleware(['auth:sanctum', 'abilities:' . Constants::store_owner_guard])->group(function () {
+    // Route to create a new product
+    Route::post('/', [ProductController::class, 'create']);
+
+    // Route to update an existing product by ID
+    Route::put('/{id}', [ProductController::class, 'update']);
+
+    // Route to delete a product by ID
+    Route::delete('/{id}', [ProductController::class, 'destroy']);
+});
+

@@ -57,21 +57,46 @@ class ProductController extends Controller
         return ApiResponse::sendResponse(200, 'products received successfully', ProductResource::collection($products));
     }
 
+    // public function getMostPopularProducts()
+    // {
+    //     $popularProducts = Product::withAvg('ratings as average_rating', 'rating')
+    //         ->with(['store', 'category']) // Include related models
+    //         ->withCount('orderItems') // Count related order items
+    //         ->orderBy('order_items_count', 'desc') // Sort by the count in descending order
+    //         ->take(10) // Limit to the top 10 most popular products
+    //         ->get()
+    //         ->map(function ($product) {
+    //             // Ensure `average_rating` is 0 if null
+    //             $product->average_rating = $product->average_rating ?? 0;
+    //             return $product;
+    //         });
+
+    //     return ApiResponse::sendResponse(
+    //         200,
+    //         'Most popular products retrieved successfully',
+    //         ProductResource::collection($popularProducts)
+    //     );
+    // }
     public function getMostPopularProducts()
     {
-        $popularProducts = Product::withAvg('ratings as average_rating', 'rating') // Correct column name
-            ->with(['store', 'category']) // Include related models
-            ->withCount('orderItems') // Count related order items
-            ->orderBy('order_items_count', 'desc') // Sort by the count in descending order
-            ->take(10) // Limit to the top 10 most popular products
-            ->get();
-
+        $popularProducts = Product::withAvg('ratings as average_rating', 'rating')
+            ->with(['store', 'category']) 
+            ->withCount(['orderItems', 'reviews']) // Add reviews count here
+            ->orderBy('order_items_count', 'desc')
+            ->take(10)
+            ->get()
+            ->map(function ($product) {
+                $product->average_rating = $product->average_rating ?? 0;
+                return $product;
+            });
+    
         return ApiResponse::sendResponse(
             200,
             'Most popular products retrieved successfully',
             ProductResource::collection($popularProducts)
         );
     }
+    
 
 
 

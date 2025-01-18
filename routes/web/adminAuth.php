@@ -9,6 +9,7 @@ use App\Http\Controllers\AdminAuth\PasswordController;
 use App\Http\Controllers\AdminAuth\PasswordResetLinkController;
 use App\Http\Controllers\AdminAuth\RegisteredUserController;
 use App\Http\Controllers\AdminAuth\VerifyEmailController;
+use App\Http\Middleware\AdminMiddleWare;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest:admin')->group(function () {
@@ -35,7 +36,7 @@ Route::middleware('guest:admin')->group(function () {
         ->name('password.store');
 });
 
-Route::middleware('admin')->group(function () {
+Route::middleware(AdminMiddleWare::class)->group(function () {
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
         ->name('password.confirm');
 
