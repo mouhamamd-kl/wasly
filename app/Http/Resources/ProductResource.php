@@ -30,5 +30,6 @@ class ProductResource extends JsonResource
             'average_rating' => $this->average_rating,
             'reviews_count' => $this->reviews_count, // Add this line
         ];
+       
     }
 }

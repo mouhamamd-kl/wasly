@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignIdFor(Store::class)->constrained('stores')->onDelete('cascade');
             $table->foreignIdFor(Customer::class)->constrained('customers')->onDelete('cascade');;
             $table->foreignIdFor(Delivery::class)->constrained('deliveries')->onDelete('cascade');;
-            $table->foreignIdFor(OrderStatus::class)->constrained('order_statuses')->onDelete('cascade');;
+            $table->foreignIdFor(OrderStatus::class)->constrained('order_statuses')->onDelete('cascade');
         
             // Timestamps for events
             $table->timestamp('order_placed_at');

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class CustomerAddress extends Model
 {
      use HasFactory;
-     protected $fillable = ['latitude', 'longitude', 'label', 'is_default'];
+     protected $fillable = ['latitude', 'longitude', 'label', 'is_default','customer_id'];
 
      public function customer()
      {
