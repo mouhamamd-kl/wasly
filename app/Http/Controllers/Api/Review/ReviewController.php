@@ -101,8 +101,6 @@ class ReviewController extends Controller
         // Return a success response
         return ApiResponse::sendResponse(200, 'Review deleted successfully.');
     }
-
-
     public function getProductReviewsApi(Request $request, $productId)
     {
         // Ensure the product exists
@@ -110,16 +108,42 @@ class ReviewController extends Controller
 
         // Retrieve all reviews for the product with necessary relationships
         $reviews = $product->reviews()
-            ->with(['rating', 'product', 'customer']) // Eager load relationships
+            ->with([
+                'rating',
+                'customer',
+                'product' => function ($query) {
+                    $query->withAvg('ratings as average_rating', 'rating') // Compute average rating
+                        ->with(['category', 'store']) // Load related models
+                        ->withCount(['reviews as reviews_count', 'orderItems']); // Count reviews & order items
+                }
+            ])
             ->get();
 
-        // Return the reviews using the ReviewResource
         return ApiResponse::sendResponse(
             code: 200,
             msg: 'Product reviews retrieved successfully',
             data: ReviewResource::collection($reviews)
         );
     }
+
+
+    // public function getProductReviewsApi(Request $request, $productId)
+    // {
+    //     // Ensure the product exists
+    //     $product = Product::findOrFail($productId);
+
+    //     // Retrieve all reviews for the product with necessary relationships
+    //     $reviews = $product->reviews()
+    //         ->with(['rating', 'product', 'customer']) // Eager load relationships
+    //         ->get();
+
+    //     // Return the reviews using the ReviewResource
+    //     return ApiResponse::sendResponse(
+    //         code: 200,
+    //         msg: 'Product reviews retrieved successfully',
+    //         data: ReviewResource::collection($reviews)
+    //     );
+    // }
 
     public function getStoreReviews(Request $request, $storeId)
     {

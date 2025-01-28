@@ -61,8 +61,8 @@ class Customer extends Authenticatable implements MustVerifyEmail
     public function cartProducts()
     {
         return $this->belongsToMany(Product::class, 'carts')
-            ->withPivot('count')
-            ->withTimestamps();
+            ->withPivot('count');
+            
     }
     public function favouriteProducts()
     {

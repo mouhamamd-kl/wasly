@@ -32,30 +32,54 @@ class ProductController extends Controller
     use AuthorizesRequests;
     public function index(Request $request)
     {
-        $products = Product::withAvg('ratings as average_rating', 'rating')
-            ->with(['category', 'store'])
-            ->get();
-
-        return ApiResponse::sendResponse(200, 'success', ProductResource::collection($products));
+        $products = Product::withAvg('ratings as average_rating', 'rating') // Include average rating
+            ->with(['category', 'store']) // Include related models
+            ->withCount('reviews as reviews_count') // Count related reviews
+            ->withCount('orderItems') // Count related order items
+            ->get()
+            ->map(function ($product) {
+                // Ensure average_rating is 0 if null
+                $product->average_rating = $product->average_rating ?? 0;
+                return $product;
+            });
+    
+        return ApiResponse::sendResponse(
+            200,
+            'Products retrieved successfully',
+            ProductResource::collection($products)
+        );
     }
-
-    public function latest(Request $request)
-    {
-        $products = Product::withAvg('ratings as average_rating', 'rating')
-            ->with(['category', 'store'])
-            ->latest()
-            ->take(10)
-            ->get();
-
-        return $products;
-    }
+    
 
     public function latestApi(Request $request)
     {
-        $products = $this->latest($request);
-
-        return ApiResponse::sendResponse(200, 'products received successfully', ProductResource::collection($products));
+        $products = Product::withAvg('ratings as average_rating', 'rating') // Include average rating
+            ->with(['category', 'store']) // Include related models
+            ->withCount('reviews as reviews_count') // Count related reviews
+            ->withCount('orderItems') // Count related order items
+            ->latest() // Order by latest products
+            ->take(10) // Limit to the latest 10 products
+            ->get()
+            ->map(function ($product) {
+                // Ensure average_rating is 0 if null
+                $product->average_rating = $product->average_rating ?? 0;
+                return $product;
+            });
+    
+        return ApiResponse::sendResponse(
+            200,
+            'Latest products retrieved successfully',
+            ProductResource::collection($products)
+        );
     }
+    
+
+    // public function latestApi(Request $request)
+    // {
+    //     $products = $this->latest($request);
+
+    //     return ApiResponse::sendResponse(200, 'products received successfully', ProductResource::collection($products));
+    // }
 
     // public function getMostPopularProducts()
     // {
@@ -79,13 +103,15 @@ class ProductController extends Controller
     // }
     public function getMostPopularProducts()
     {
-        $popularProducts = Product::withAvg('ratings as average_rating', 'rating')
-            ->with(['store', 'category']) 
-            ->withCount(['orderItems', 'reviews']) // Add reviews count here
-            ->orderBy('order_items_count', 'desc')
-            ->take(10)
+        $popularProducts = Product::withAvg('ratings as average_rating', 'rating') // Include average rating
+            ->with(['store', 'category']) // Include related models
+            ->withCount('orderItems') // Count related order items
+            ->withCount('reviews as reviews_count') // Count related reviews
+            ->orderBy('order_items_count', 'desc') // Sort by the count in descending order
+            ->take(10) // Limit to the top 10 most popular products
             ->get()
             ->map(function ($product) {
+                // Ensure average_rating is 0 if null
                 $product->average_rating = $product->average_rating ?? 0;
                 return $product;
             });
@@ -100,76 +126,133 @@ class ProductController extends Controller
 
 
 
-    public function searchProducts(Request $request)
+    public function searchApi(Request $request)
     {
-        return Product::withAvg('ratings as average_rating', 'rating')
-            ->with(['category', 'store'])
+        $products = Product::withAvg('ratings as average_rating', 'rating') // Include average rating
+            ->with(['category', 'store']) // Include related models
+            ->withCount('reviews as reviews_count') // Count related reviews
+            ->withCount('orderItems') // Count related order items
             ->filterByStore($request->input('store_id'))
             ->filterByCategory($request->input('category_id'))
             ->filterByName($request->input('name'))
             ->filterByPriceRange($request->input('min_price'), $request->input('max_price'))
             ->sortByPrice($request->input('sort'))
-            ->where('is_active', true);
+            ->where('is_active', true) // Filter active products
+            ->get() // Retrieve results
+            ->map(function ($product) {
+                // Ensure average_rating is 0 if null
+                $product->average_rating = $product->average_rating ?? 0;
+                return $product;
+            });
+    
+        return ApiResponse::sendResponse(
+            200,
+            'Products retrieved successfully',
+            ProductResource::collection($products)
+        );
     }
+    
 
-    public function searchApi(Request $request)
-    {
-        $products = $this->searchProducts($request)->get();
+    // public function searchApi(Request $request)
+    // {
+    //     $products = $this->searchProducts($request)->get();
 
-        return ApiResponse::sendResponse(200, 'success', ProductResource::collection($products));
-    }
+    //     return ApiResponse::sendResponse(200, 'success', ProductResource::collection($products));
+    // }
 
     public function show($id)
     {
-        $product = Product::withAvg('ratings as average_rating', 'rating')
-            ->with(['category', 'store'])
-            ->find($id);
-
+        $product = Product::withAvg('ratings as average_rating', 'rating') // Include average rating
+            ->with(['category', 'store']) // Include related models
+            ->withCount('reviews as reviews_count') // Count related reviews
+            ->withCount('orderItems') // Count related order items
+            ->find($id); // Find the product by ID
+    
         if ($product) {
-            return ApiResponse::sendResponse(200, 'Product retrieved successfully', new ProductResource($product));
+            // Ensure average_rating is 0 if null
+            $product->average_rating = $product->average_rating ?? 0;
+    
+            return ApiResponse::sendResponse(
+                200,
+                'Product retrieved successfully',
+                new ProductResource($product)
+            );
         }
-
+    
         return ApiResponse::sendResponse(404, 'Product not found', []);
     }
+    
 
-    public function getStoreProducts($storeId)
+    public function getStoreProductsApi($storeId)
     {
+        // Ensure the store exists or return a 404 response
         $store = Store::findOrFailWithResponse($storeId);
-
-        return Product::withAvg('ratings as average_rating', 'rating')
-            ->with(['category', 'store'])
-            ->ByStore($storeId)
-            ->ByActive()
-            ->latest();
+    
+        $products = Product::withAvg('ratings as average_rating', 'rating') // Include average rating
+            ->with(['category', 'store']) // Include related models
+            ->withCount('reviews as reviews_count') // Count related reviews
+            ->withCount('orderItems') // Count related order items
+            ->ByStore($storeId) // Filter by store ID
+            ->ByActive() // Filter active products
+            ->latest() // Order by latest
+            ->get()
+            ->map(function ($product) {
+                // Ensure average_rating is 0 if null
+                $product->average_rating = $product->average_rating ?? 0;
+                return $product;
+            });
+    
+        return ApiResponse::sendResponse(
+            200,
+            'Products for the store retrieved successfully',
+            ProductResource::collection($products)
+        );
     }
+    
 
-    public function getStoreProductsApi(Request $request, $storeId)
+    // public function getStoreProductsApi(Request $request, $storeId)
+    // {
+    //     $productsQuery = $this->getStoreProducts($storeId);
+
+    //     $products = $productsQuery->get();
+
+    //     return ApiResponse::sendResponse(200, 'success', ProductResource::collection($products));
+    // }
+
+    public function getCategoryProductsApi($categoryId)
     {
-        $productsQuery = $this->getStoreProducts($storeId);
-
-        $products = $productsQuery->get();
-
-        return ApiResponse::sendResponse(200, 'success', ProductResource::collection($products));
-    }
-
-    public function getCategoryProducts($categoryId)
-    {
+        // Ensure the category exists or return a 404 response
         $category = Category::findOrFailWithResponse($categoryId);
-
-        return Product::withAvg('ratings as average_rating', 'rating')
-            ->with(['category', 'store'])
-            ->ByCategory($categoryId)
-            ->latest();
+    
+        $products = Product::withAvg('ratings as average_rating', 'rating') // Include average rating
+            ->with(['category', 'store']) // Include related models
+            ->withCount('reviews as reviews_count') // Count related reviews
+            ->withCount('orderItems') // Count related order items
+            ->ByCategory($categoryId) // Filter by category ID
+            ->latest() // Order by latest
+            ->get()
+            ->map(function ($product) {
+                // Ensure average_rating is 0 if null
+                $product->average_rating = $product->average_rating ?? 0;
+                return $product;
+            });
+    
+        return ApiResponse::sendResponse(
+            200,
+            'Products for the category retrieved successfully',
+            ProductResource::collection($products)
+        );
     }
+    
 
-    public function getCategoryProductsApi(Request $request, $storeId)
-    {
-        $productsQuery = $this->getStoreProducts($storeId);
+    // public function getCategoryProductsApi(Request $request, $storeId)
+    // {
+    //     $productsQuery = $this->getCategoryProducts($storeId);
 
-        $products = $productsQuery->get();
+    //     $products = $productsQuery->get();
 
-        return ApiResponse::sendResponse(200, 'success', ProductResource::collection($products));
-    }
+    //     return ApiResponse::sendResponse(200, 'success', ProductResource::collection($products));
+    // }
 
     /**
      * Display a listing of the resource.

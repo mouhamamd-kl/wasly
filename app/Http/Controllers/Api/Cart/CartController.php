@@ -113,50 +113,133 @@ class CartController extends Controller
 
         return ApiResponse::sendResponse(200, 'Product removed from cart successfully.');
     }
-
     public function getCartUserProducts(Request $request)
     {
         // Retrieve the authenticated customer
         $customer = $request->user();
-
-        // Query to get the cart products with their related models
-        $cartProductsQuery = $customer->cartProducts()->with('category', 'store');
-
-        // Get all cart products (not paginated)
+    
+        // Query to get the cart products with related models and computed fields
+        $cartProductsQuery = $customer->cartProducts()
+            ->withAvg('ratings as average_rating', 'rating') // Include average rating
+            ->with(['category', 'store']) // Include related models
+            ->withCount(['reviews as reviews_count']); // Count related reviews
+    
+        // Get all cart products
         $cartProducts = $cartProductsQuery->get();
-
+    
         // Calculate the total price of all cart products
         $total = $cartProducts->sum(function ($product) {
             return $product->price * $product->pivot->count;
         });
-
-        // Return the cart products and total
-        return compact('cartProductsQuery', 'total');
+    
+        // Transform the cart products to the desired structure
+        $transformedCartProducts = $cartProducts->map(function ($product) {
+            return [
+                "product_cart" => [
+                    "product" => [
+                        "id" => $product->id,
+                        "name" => $product->name,
+                        "photo" => $product->photo,
+                        "description" => $product->description,
+                        "stock_quantity" => $product->stock_quantity,
+                        "price" => $product->price,
+                        "is_active" => $product->is_active,
+                        "category_id" => $product->category_id,
+                        "store_id" => $product->store_id,
+                        "created_at" => $product->created_at,
+                        "updated_at" => $product->updated_at,
+                        "average_rating" => $product->average_rating,
+                        "reviews_count" => $product->reviews_count,
+                        "category" => $product->category,
+                        "store" => $product->store,
+                    ],
+                    "count" => $product->pivot->count,
+                    "subtotal" => $product->price * $product->pivot->count,
+                ],
+            ];
+        });
+    
+        // Return the transformed response using ApiResponse
+        return ApiResponse::sendResponse(
+            200,
+            'Cart products retrieved successfully',
+            [
+                'cartProducts' => $transformedCartProducts,
+                'total' => $total,
+            ]
+        );
     }
+    
+    // public function getCartUserProducts(Request $request)
+    // {
+    //     // Retrieve the authenticated customer
+    //     $customer = $request->user();
+    
+    //     // Query to get the cart products with related models and computed fields
+    //     $cartProductsQuery = $customer->cartProducts()
+    //     ->withAvg('ratings as average_rating', 'rating') // Include average rating
+    //     ->with(['category', 'store']) // Include related models
+    //     ->withCount(['reviews as reviews_count']); // Count related reviews
+    
+    
+    //     // Get all cart products (not paginated)
+    //     $cartProducts = $cartProductsQuery->get();
+    
+    //     // Calculate the total price of all cart products
+    //     $total = $cartProducts->sum(function ($product) {
+    //         return $product->price * $product->pivot->count;
+    //     });
+    
+    //     // Return the cart products and total
+    //     return [
+    //         'cartProducts' => $cartProducts,
+    //         'total' => $total,
+    //     ];
+    // }
+    
+    // public function getCartUserProductsApi(Request $request)
+    // {
+    //     // Retrieve the data using getCartUserProducts
+    //     $data = $this->getCartUserProducts($request);
+    
+    //     // Extract the variables
+    //     $cartProducts = $data['cartProducts'];
+    //     $total = $data['total'];
+    
+    //     // Build the response structure
+    //     $responseArray = [
+    //         'products' => CartProductResource::collection($cartProducts), // Use CartProductResource for product details
+    //         'summary' => [
+    //             'total' => $total, // Include total price in the summary
+    //         ],
+    //     ];
+    
+    //     // Return the API response
+    //     return ApiResponse::sendResponse(200, 'Cart products retrieved successfully', $responseArray);
+    // }
+    
 
 
 
+    // public function getCartUserProductsApi(Request $request)
+    // {
+    //     // Call getCartUserProducts to retrieve the data
+    //     $data = $this->getCartUserProducts($request);
 
-    public function getCartUserProductsApi(Request $request)
-    {
-        // Call getCartUserProducts to retrieve the data
-        $data = $this->getCartUserProducts($request);
+    //     // Extract the variables
+    //     $cartProducts = $data['cartProductsQuery']->get();
+    //     $total = $data['total'];
 
-        // Extract the variables
-        $paginate = getPaginate($request);
-        $cartProducts = $data['cartProductsQuery']->paginate($paginate);
-        $total = $data['total'];
-        $response = PaginationHelper::paginateResponse($cartProducts, CartProductResource::class, Cart::class);
+    //     // Convert the response to an array for modification
+    //     $responseArray['product'] = $cartProducts;
 
-        // Convert the response to an array for modification
-        $responseArray = $response->getData(true);
+    //     // Add the total to the response array
+    //     $responseArray['data']['total'] = $total;
 
-        // Add the total to the response array
-        $responseArray['data']['total'] = $total;
+    //     // Return the modified response
+    //     return ApiResponse::sendResponse(200, 'Cart products retrieved successfully', $responseArray);
+    // }
 
-        // Return the modified response
-        return ApiResponse::sendResponse(200, 'Cart products retrieved successfully', $responseArray);
-    }
     public function clearCart(Request $request)
     {
         // Retrieve the authenticated customer

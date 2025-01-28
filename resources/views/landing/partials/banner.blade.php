@@ -42,7 +42,7 @@
                         
                         <li>
                             <a href="#" class="popup-youtube play-button"
-                                data-url="https://www.youtube.com/embed/tgbNymZ7vqY?autoplay=1&mute=1"
+                                data-url="https://www.youtube.com/embed/cB_RDcHfiHQ?autoplay=1&mute=1"
                                 data-toggle="modal" data-target="#myModal" title="XJj2PbenIsU"><img
                                     src="{{ asset('assets-front') }}/images/play.png" alt="img"></a>
                         </li>
